@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Security First | AttendPro</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="hero-style.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
+  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+</head>
+<body>
+  <header class="page-hero compact-hero">
+    <nav class="hero-nav">
+      <div class="nav-container">
+        <div class="logo">
+          <i class="fas fa-clock"></i>
+          <span>AttendPro</span>
+        </div>
+        <ul class="nav-menu">
+          <li><a href="index.html" class="nav-link">Home</a></li>
+          <li><a href="features.html" class="nav-link">Features</a></li>
+          <li><a href="dashboard.html" class="nav-link">Dashboard</a></li>
+          <li><a href="about.html" class="nav-link active">About</a></li>
+          <li><a href="contact.html" class="nav-link">Contact</a></li>
+          <li id="navLoginItem"><button class="nav-btn-login" id="navLoginBtn" onclick="showLoginModal()">Login</button></li>
+          <li id="navRegisterItem"><button class="nav-btn-register" id="navRegisterBtn" onclick="showRegisterModal()">Register</button></li>
+          <li id="navUserItem" class="nav-user" style="display: none;">
+            <div class="nav-user-info">
+              <img id="navUserPic" src="raa.jpg" alt="Profile">
+              <span id="navUserName">Admin</span>
+            </div>
+            <button class="nav-btn-profile" onclick="showProfileModal()">Edit Profile</button>
+            <button class="nav-btn-logout" onclick="logout()">Logout</button>
+          </li>
+        </ul>
+        <div class="hamburger">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+    </nav>
+    <div class="page-hero-content small">
+      <h1 class="page-hero-title">Security First</h1>
+      <p class="page-hero-subtitle">Protecting employee data with strong access controls and safe workflows.</p>
+      <div class="page-hero-actions">
+        <a class="btn-primary" href="about.html">Back to About</a>
+        <a class="btn-secondary" href="contact.html">Security Questions</a>
+      </div>
+    </div>
+  </header>
+
+  <section class="page-section">
+    <div class="container">
+      <h2 class="section-title">Security Is Built In</h2>
+      <p class="section-subtitle">
+        Attendance data includes personal identifiers, schedules, and operational details. We design every layer
+        of AttendPro with safeguards that reduce risk and keep teams in control.
+      </p>
+      <div class="about-grid">
+        <div class="about-card">
+          <h3>Role-Based Access</h3>
+          <p>
+            Admin and manager roles are clearly separated. Sensitive actions such as edits, deletions,
+            and payroll updates are protected and visible to authorized users only.
+          </p>
+        </div>
+        <div class="about-card">
+          <h3>Token Protection</h3>
+          <p>
+            Encrypted tokens and secure sessions keep accounts protected. Sessions expire when the browser
+            is closed to reduce the risk of unauthorized access on shared devices.
+          </p>
+        </div>
+        <div class="about-card">
+          <h3>Safe Uploads</h3>
+          <p>
+            Profile uploads are validated before storage. This prevents accidental or unsafe file
+            types from entering the system.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="page-section alt-section">
+    <div class="container">
+      <h2 class="section-title">Operational Safeguards</h2>
+      <div class="checklist">
+        <div class="check-item"><i class="fas fa-check-circle"></i> Admin-only controls for updates and deletions.</div>
+        <div class="check-item"><i class="fas fa-check-circle"></i> Clear audit visibility for record changes.</div>
+        <div class="check-item"><i class="fas fa-check-circle"></i> Secure logout that clears active sessions.</div>
+        <div class="check-item"><i class="fas fa-check-circle"></i> Offline actions are queued and verified before sync.</div>
+        <div class="check-item"><i class="fas fa-check-circle"></i> Role separation for payroll and attendance workflows.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="page-section">
+    <div class="container">
+      <h2 class="section-title">Your Data, Your Control</h2>
+      <div class="about-grid">
+        <div class="about-card">
+          <h3>Responsible Defaults</h3>
+          <p>
+            Sensitive fields are protected by default, while everyday attendance actions remain
+            quick and user friendly.
+          </p>
+        </div>
+        <div class="about-card">
+          <h3>Clear Recovery Paths</h3>
+          <p>
+            Mistakes happen. The platform supports controlled edits by authorized users so
+            historical records stay accurate.
+          </p>
+        </div>
+        <div class="about-card">
+          <h3>Compliance Ready</h3>
+          <p>
+            Exportable data and consistent policy controls help teams prepare for compliance
+            checks and internal audits.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Login Modal -->
+  <div id="loginModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('loginModal')">&times;</span>
+      <h2>Login to Your Account</h2>
+      <form id="loginForm" onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="loginEmail" required placeholder="Enter your email">
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="loginPassword" required placeholder="Enter your password">
+        </div>
+        <button type="submit" class="btn-primary btn-block">Login</button>
+        <p class="text-center">Don't have an account? <a href="#" onclick="showRegisterModal()">Register</a></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- Register Modal -->
+  <div id="registerModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('registerModal')">&times;</span>
+      <h2>Create New Account</h2>
+      <form id="registerForm" onsubmit="handleRegister(event)">
+        <div class="form-group">
+          <label>Username</label>
+          <input type="text" id="regUsername" required placeholder="Choose a username">
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="regEmail" required placeholder="Enter your email">
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="regPassword" required placeholder="Minimum 6 characters">
+        </div>
+        <div class="form-group">
+          <label>Department</label>
+          <select id="regDepartment" required>
+            <option value="">Select Department</option>
+            <option value="IT">IT</option>
+            <option value="HR">HR</option>
+            <option value="Finance">Finance</option>
+            <option value="Marketing">Marketing</option>
+          </select>
+        </div>
+        <button type="submit" class="btn-primary btn-block">Register</button>
+        <p class="text-center">Already have an account? <a href="#" onclick="showLoginModal()">Login</a></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast"></div>
+
+  <script src="script.js"></script>
+
+  <!-- Profile Edit Modal -->
+  <div id="profileModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('profileModal')">&times;</span>
+      <h2>Edit Profile</h2>
+      <form id="profileForm" onsubmit="saveProfile(event)">
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" id="profileName" required />
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="profileEmail" required />
+        </div>
+        <div class="form-group">
+          <label>Phone</label>
+          <input type="text" id="profilePhone" />
+        </div>
+        <div class="form-group">
+          <label>Department</label>
+          <select id="profileDepartment">
+            <option value="IT">IT</option>
+            <option value="HR">HR</option>
+            <option value="Finance">Finance</option>
+            <option value="Marketing">Marketing</option>
+            <option value="Operations">Operations</option>
+            <option value="Sales">Sales</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Role</label>
+          <select id="profileRole">
+            <option value="admin">Admin</option>
+            <option value="vice_admin">Vice Admin</option>
+          </select>
+        </div>
+        <button type="submit" class="btn-primary btn-block">Save Changes</button>
+      </form>
+    </div>
+  </div>
+</body>
+</html>

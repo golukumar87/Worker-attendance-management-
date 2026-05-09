@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Features | AttendPro</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="hero-style.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
+  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+</head>
+<body class="features-page">
+  <header class="page-hero">
+    <nav class="hero-nav">
+      <div class="nav-container">
+        <div class="logo">
+          <i class="fas fa-clock"></i>
+          <span>AttendPro</span>
+        </div>
+        <ul class="nav-menu">
+          <li><a href="index.html" class="nav-link">Home</a></li>
+          <li><a href="features.html" class="nav-link active">Features</a></li>
+          <li><a href="dashboard.html" class="nav-link">Dashboard</a></li>
+          <li><a href="about.html" class="nav-link">About</a></li>
+          <li><a href="contact.html" class="nav-link">Contact</a></li>
+          <li id="navLoginItem"><button class="nav-btn-login" id="navLoginBtn" onclick="showLoginModal()">Login</button></li>
+          <li id="navRegisterItem"><button class="nav-btn-register" id="navRegisterBtn" onclick="showRegisterModal()">Register</button></li>
+          <li id="navUserItem" class="nav-user" style="display: none;">
+            <div class="nav-user-info">
+              <img id="navUserPic" src="raa.jpg" alt="Profile">
+              <span id="navUserName">Admin</span>
+            </div>
+            <button class="nav-btn-profile" onclick="showProfileModal()">Edit Profile</button>
+            <button class="nav-btn-logout" onclick="logout()">Logout</button>
+          </li>
+        </ul>
+        <div class="hamburger">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+    </nav>
+    <div class="page-hero-content">
+      <h1 class="page-hero-title">All Features</h1>
+      <p class="page-hero-subtitle">Enterprise-ready tools for accurate, fast, and secure attendance tracking.</p>
+      <div class="page-hero-actions">
+        <button class="hero-btn-primary" onclick="goToDashboard()"><i class="fas fa-tachometer-alt"></i> Open Dashboard</button>
+        <button class="hero-btn-secondary" onclick="goToDemo()"><i class="fas fa-play"></i> Watch Demo</button>
+      </div>
+    </div>
+  </header>
+
+  <section class="page-section">
+    <div class="container">
+      <h2 class="section-title">Core Features</h2>
+      <p class="section-subtitle">Built for teams that need reliability, speed, and transparency.</p>
+      <div class="features-grid">
+        <a class="feature-card-link" href="feature-biometric.html">
+          <div id="biometric" class="feature-card feature-card-anchor">
+            <div class="feature-icon"><i class="fas fa-fingerprint"></i></div>
+            <h3>Biometric Integration</h3>
+            <p>Fingerprint, face recognition, and RFID support for tamper-proof check-in.</p>
+          </div>
+        </a>
+        <a class="feature-card-link" href="feature-geofencing.html">
+          <div id="geofencing" class="feature-card feature-card-anchor">
+            <div class="feature-icon"><i class="fas fa-map-marker-alt"></i></div>
+            <h3>Geo-fencing</h3>
+            <p>GPS validation ensures attendance is marked only within approved zones.</p>
+          </div>
+        </a>
+        <a class="feature-card-link" href="feature-analytics.html">
+          <div id="analytics" class="feature-card feature-card-anchor">
+            <div class="feature-icon"><i class="fas fa-chart-line"></i></div>
+            <h3>Advanced Analytics</h3>
+            <p>Track trends, check-in spikes, and department performance in real time.</p>
+          </div>
+        </a>
+        <a class="feature-card-link" href="feature-notifications.html">
+          <div id="notifications" class="feature-card feature-card-anchor">
+            <div class="feature-icon"><i class="fas fa-bell"></i></div>
+            <h3>Smart Notifications</h3>
+            <p>Automatic alerts for late arrivals, absences, or missing check-outs.</p>
+          </div>
+        </a>
+        <a class="feature-card-link" href="feature-mobile.html">
+          <div id="mobile" class="feature-card feature-card-anchor">
+            <div class="feature-icon"><i class="fas fa-mobile-alt"></i></div>
+            <h3>Mobile Friendly</h3>
+            <p>Responsive UI optimized for on-site and remote teams.</p>
+          </div>
+        </a>
+        <a class="feature-card-link" href="feature-cloud-backup.html">
+          <div id="cloud" class="feature-card feature-card-anchor">
+            <div class="feature-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+            <h3>Cloud Backup</h3>
+            <p>Safe storage with daily backups and quick recovery.</p>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="page-section alt-section">
+    <div class="container">
+      <h2 class="section-title">Advanced Features</h2>
+      <p class="section-subtitle">Modern features to keep teams productive even in real-world conditions.</p>
+      <div class="features-grid">
+        <a class="feature-card-link" href="feature-offline.html">
+          <div id="offline" class="feature-card feature-card-anchor">
+            <div class="feature-icon"><i class="fas fa-wifi"></i></div>
+            <h3>Offline Sync</h3>
+            <p>Queue attendance actions offline and auto-sync when connectivity is restored.</p>
+          </div>
+        </a>
+        <a class="feature-card-link" href="feature-export.html">
+          <div id="export" class="feature-card feature-card-anchor">
+            <div class="feature-icon"><i class="fas fa-file-export"></i></div>
+            <h3>CSV & PDF Export</h3>
+            <p>Export reports for audits, compliance, or payroll processing.</p>
+          </div>
+        </a>
+        <a class="feature-card-link" href="feature-insights.html">
+          <div id="insights" class="feature-card feature-card-anchor">
+            <div class="feature-icon"><i class="fas fa-lightbulb"></i></div>
+            <h3>Smart Insights</h3>
+            <p>Identify late patterns, overtime, and team attendance gaps.</p>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="page-section">
+    <div class="container">
+      <h2 class="section-title">Additional Features</h2>
+      <p class="section-subtitle">Extra modules to scale teams, compliance, and integrations.</p>
+      <div class="features-grid">
+        <a class="feature-card-link" href="feature-shift-automation.html">
+          <div id="shift-automation" class="feature-card feature-card-anchor">
+            <div class="feature-icon"><i class="fas fa-random"></i></div>
+            <h3>Shift Automation</h3>
+            <p>Auto-assign shifts, manage rotation, and handle overtime rules.</p>
+          </div>
+        </a>
+        <a class="feature-card-link" href="feature-leave-approval.html">
+          <div id="leave-approval" class="feature-card feature-card-anchor">
+            <div class="feature-icon"><i class="fas fa-clipboard-check"></i></div>
+            <h3>Leave Approval Workflow</h3>
+            <p>Multi-level approval, escalation, and policy enforcement.</p>
+          </div>
+        </a>
+        <a class="feature-card-link" href="feature-payroll-sync.html">
+          <div id="payroll-sync" class="feature-card feature-card-anchor">
+            <div class="feature-icon"><i class="fas fa-wallet"></i></div>
+            <h3>Payroll Sync</h3>
+            <p>Seamless payroll exports and provider integrations.</p>
+          </div>
+        </a>
+        <a class="feature-card-link" href="feature-audit-trail.html">
+          <div id="audit-trail" class="feature-card feature-card-anchor">
+            <div class="feature-icon"><i class="fas fa-shield-alt"></i></div>
+            <h3>Audit Trail</h3>
+            <p>Immutable logs for compliance and change tracking.</p>
+          </div>
+        </a>
+        <a class="feature-card-link" href="feature-device-management.html">
+          <div id="device-management" class="feature-card feature-card-anchor">
+            <div class="feature-icon"><i class="fas fa-tablet-alt"></i></div>
+            <h3>Device Management</h3>
+            <p>Approve, track, and control devices securely.</p>
+          </div>
+        </a>
+        <a class="feature-card-link" href="feature-api-integrations.html">
+          <div id="api-integrations" class="feature-card feature-card-anchor">
+            <div class="feature-icon"><i class="fas fa-plug"></i></div>
+            <h3>API Integrations</h3>
+            <p>Connect HRMS, payroll, and analytics platforms.</p>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section id="demo" class="page-section demo-section">
+    <div class="container">
+      <h2 class="section-title">Quick Demo</h2>
+      <div class="demo-grid">
+        <a class="demo-step-link" href="demo-register.html">
+          <div class="demo-step">
+            <span class="demo-number">1</span>
+            <h3>Register & Login</h3>
+            <p>Create your account and sign in securely.</p>
+          </div>
+        </a>
+        <a class="demo-step-link" href="demo-attendance.html">
+          <div class="demo-step">
+            <span class="demo-number">2</span>
+            <h3>Mark Attendance</h3>
+            <p>Check-in with location and optional notes.</p>
+          </div>
+        </a>
+        <a class="demo-step-link" href="demo-reports.html">
+          <div class="demo-step">
+            <span class="demo-number">3</span>
+            <h3>Analyze Reports</h3>
+            <p>Generate analytics and export for HR.</p>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Login Modal -->
+  <div id="loginModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('loginModal')">&times;</span>
+      <h2>Login to Your Account</h2>
+      <form id="loginForm" onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="loginEmail" required placeholder="Enter your email">
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="loginPassword" required placeholder="Enter your password">
+        </div>
+        <button type="submit" class="btn-primary btn-block">Login</button>
+        <p class="text-center">Don't have an account? <a href="#" onclick="showRegisterModal()">Register</a></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- Register Modal -->
+  <div id="registerModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('registerModal')">&times;</span>
+      <h2>Create New Account</h2>
+      <form id="registerForm" onsubmit="handleRegister(event)">
+        <div class="form-group">
+          <label>Username</label>
+          <input type="text" id="regUsername" required placeholder="Choose a username">
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="regEmail" required placeholder="Enter your email">
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="regPassword" required placeholder="Minimum 6 characters">
+        </div>
+        <div class="form-group">
+          <label>Department</label>
+          <select id="regDepartment" required>
+            <option value="">Select Department</option>
+            <option value="IT">IT</option>
+            <option value="HR">HR</option>
+            <option value="Finance">Finance</option>
+            <option value="Marketing">Marketing</option>
+          </select>
+        </div>
+        <button type="submit" class="btn-primary btn-block">Register</button>
+        <p class="text-center">Already have an account? <a href="#" onclick="showLoginModal()">Login</a></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast"></div>
+
+  <script src="script.js"></script>
+
+  <!-- Profile Edit Modal -->
+  <div id="profileModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('profileModal')">&times;</span>
+      <h2>Edit Profile</h2>
+      <form id="profileForm" onsubmit="saveProfile(event)">
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" id="profileName" required />
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="profileEmail" required />
+        </div>
+        <div class="form-group">
+          <label>Phone</label>
+          <input type="text" id="profilePhone" />
+        </div>
+        <div class="form-group">
+          <label>Department</label>
+          <select id="profileDepartment">
+            <option value="IT">IT</option>
+            <option value="HR">HR</option>
+            <option value="Finance">Finance</option>
+            <option value="Marketing">Marketing</option>
+            <option value="Operations">Operations</option>
+            <option value="Sales">Sales</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Role</label>
+          <select id="profileRole">
+            <option value="admin">Admin</option>
+            <option value="vice_admin">Vice Admin</option>
+          </select>
+        </div>
+        <button type="submit" class="btn-primary btn-block">Save Changes</button>
+      </form>
+    </div>
+  </div>
+</body>
+</html>

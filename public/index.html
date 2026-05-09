@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Advanced Attendance Management System</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="hero-style.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
+  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    (function () {
+      try {
+        if (sessionStorage.getItem('seenWelcome') !== '1') {
+          window.location.replace('welcome.html');
+        }
+      } catch (e) {
+        // If sessionStorage is blocked, continue without redirect.
+      }
+    })();
+  </script>
+</head>
+<body>
+  <!-- Hero Section -->
+  <section id="home" class="hero">
+    <div class="hero-video-bg">
+      <video autoplay muted loop id="hero-video">
+        <source src="https://assets.mixkit.co/videos/preview/mixkit-office-workers-in-a-meeting-4386-large.mp4" type="video/mp4">
+      </video>
+    </div>
+    <div class="hero-overlay"></div>
+    <nav class="hero-nav">
+      <div class="nav-container">
+        <div class="logo">
+          <i class="fas fa-clock"></i>
+          <span>AttendPro</span>
+        </div>
+        <ul class="nav-menu">
+          <li><a href="index.html" class="nav-link active">Home</a></li>
+          <li><a href="#quick-attendance" class="nav-link">Mark Attendance</a></li>
+          <li><a href="features.html" class="nav-link">Features</a></li>
+          <li><a href="dashboard.html" class="nav-link">Dashboard</a></li>
+          <li><a href="about.html" class="nav-link">About</a></li>
+          <li><a href="contact.html" class="nav-link">Contact</a></li>
+          <li id="navLoginItem"><button class="nav-btn-login" id="navLoginBtn" onclick="showLoginModal()">Login</button></li>
+          <li id="navRegisterItem"><button class="nav-btn-register" id="navRegisterBtn" onclick="showRegisterModal()">Register</button></li>
+          <li id="navUserItem" class="nav-user" style="display: none;">
+            <div class="nav-user-info">
+              <img id="navUserPic" src="raa.jpg" alt="Profile">
+              <span id="navUserName">Admin</span>
+            </div>
+            <button class="nav-btn-profile" onclick="showProfileModal()">Edit Profile</button>
+            <button class="nav-btn-logout" onclick="logout()">Logout</button>
+          </li>
+        </ul>
+        <div class="hamburger">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+    </nav>
+    <div class="hero-content">
+      <h1 class="hero-title">Smart Attendance Management System</h1>
+      <p class="hero-subtitle">Revolutionize your workforce management with real-time tracking, analytics, and automated reporting</p>
+      <div class="hero-buttons">
+        <button class="hero-btn-primary" onclick="document.getElementById('quick-attendance')?.scrollIntoView({ behavior: 'smooth' })">
+          <i class="fas fa-pen"></i> Mark Attendance
+        </button>
+        <button class="hero-btn-primary" onclick="showRegisterModal()">
+          <i class="fas fa-rocket"></i> Get Started Free
+        </button>
+        <button class="hero-btn-secondary" onclick="goToDemo()">
+          <i class="fas fa-play"></i> Watch Demo
+        </button>
+      </div>
+      <div class="hero-stats">
+        <div class="stat-item">
+          <span class="stat-number">500+</span>
+          <span class="stat-label">Companies</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number">50K+</span>
+          <span class="stat-label">Employees</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number">99.9%</span>
+          <span class="stat-label">Accuracy</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Quick Attendance Section -->
+  <section id="quick-attendance" class="hero-attendance">
+    <div class="container">
+      <div class="hero-attendance-header">
+        <h2>Quick Mark Attendance</h2>
+        <p>Employees can mark attendance here without opening the dashboard.</p>
+      </div>
+      <div class="attendance-form-container">
+        <form id="heroAttendanceForm" onsubmit="handleHeroCheckIn(event)">
+          <div class="form-group">
+            <label for="heroEmployeeId"><i class="fas fa-id-card"></i> Employee ID</label>
+            <input type="text" id="heroEmployeeId" placeholder="Enter Employee ID" required />
+          </div>
+
+          <div class="form-group">
+            <label for="heroName"><i class="fas fa-user"></i> Full Name</label>
+            <input type="text" id="heroName" placeholder="Enter your name" required />
+          </div>
+
+          <div class="form-group">
+            <label for="heroDepartment"><i class="fas fa-building"></i> Department</label>
+            <select id="heroDepartment" required>
+              <option value="">Select Department</option>
+              <option value="IT">IT</option>
+              <option value="HR">HR</option>
+              <option value="Finance">Finance</option>
+              <option value="Marketing">Marketing</option>
+              <option value="Operations">Operations</option>
+              <option value="Sales">Sales</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="heroNotes"><i class="fas fa-sticky-note"></i> Notes (Optional)</label>
+            <textarea id="heroNotes" placeholder="Any additional notes..."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="heroShift"><i class="fas fa-sun"></i> Shift</label>
+            <select id="heroShift" required>
+              <option value="Day">Day</option>
+              <option value="Night">Night</option>
+              <option value="Extra Work">Extra Work</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label><i class="fas fa-map-marker-alt"></i> Location</label>
+            <input type="text" id="heroLocation" placeholder="Auto-detected location" readonly />
+          </div>
+
+          <button type="submit" id="heroCheckInBtn" class="btn-primary">
+            <i class="fas fa-sign-in-alt"></i> Check In
+          </button>
+          <button type="button" id="heroCheckOutBtn" class="btn-secondary" onclick="handleHeroCheckOut()">
+            <i class="fas fa-sign-out-alt"></i> Check Out
+          </button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section id="features" class="features-section">
+    <div class="container">
+      <h2 class="section-title">Powerful Features</h2>
+      <p class="section-subtitle">Everything you need to manage attendance effectively</p>
+      <div class="features-grid">
+        <a class="feature-card-link" href="feature-biometric.html">
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fas fa-fingerprint"></i>
+            </div>
+            <h3>Biometric Integration</h3>
+            <p>Support for fingerprint, face recognition, and RFID cards</p>
+          </div>
+        </a>
+        <a class="feature-card-link" href="feature-geofencing.html">
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fas fa-map-marker-alt"></i>
+            </div>
+            <h3>Geo-fencing</h3>
+            <p>Location-based attendance with GPS tracking</p>
+          </div>
+        </a>
+        <a class="feature-card-link" href="feature-analytics.html">
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fas fa-chart-line"></i>
+            </div>
+            <h3>Advanced Analytics</h3>
+            <p>Real-time reports and predictive insights</p>
+          </div>
+        </a>
+        <a class="feature-card-link" href="feature-notifications.html">
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fas fa-bell"></i>
+            </div>
+            <h3>Smart Notifications</h3>
+            <p>Automated alerts for late arrivals and absences</p>
+          </div>
+        </a>
+        <a class="feature-card-link" href="feature-mobile.html">
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fas fa-mobile-alt"></i>
+            </div>
+            <h3>Mobile App</h3>
+            <p>Mark attendance from anywhere using mobile devices</p>
+          </div>
+        </a>
+        <a class="feature-card-link" href="feature-cloud-backup.html">
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fas fa-cloud-upload-alt"></i>
+            </div>
+            <h3>Cloud Backup</h3>
+            <p>Secure cloud storage with automatic backup</p>
+          </div>
+        </a>
+        <a class="feature-card-link" href="features.html#offline">
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fas fa-wifi"></i>
+            </div>
+            <h3>Offline Sync</h3>
+            <p>Queue check-ins/out and auto-sync when back online</p>
+          </div>
+        </a>
+        <a class="feature-card-link" href="features.html#export">
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fas fa-file-export"></i>
+            </div>
+            <h3>CSV & PDF Export</h3>
+            <p>One-click export for compliance and audits</p>
+          </div>
+        </a>
+        <a class="feature-card-link" href="features.html#insights">
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fas fa-lightbulb"></i>
+            </div>
+            <h3>Smart Insights</h3>
+            <p>Late trends, overtime flags, and team heatmaps</p>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Application Container (Hidden initially) -->
+  <div class="app-container" style="display: none;">
+    <!-- Header -->
+    <header>
+      <div class="header-content">
+        <h1><i class="fas fa-clock"></i> Advanced Attendance Management System</h1>
+        <div class="user-profile-header">
+          <img id="headerProfilePic" src="raa.jpg" alt="Profile">
+          <span id="headerUserName">Guest</span>
+          <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i></button>
+        </div>
+        <div class="date-time">
+          <div id="currentDate"></div>
+          <div id="currentTime"></div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Left Sidebar -->
+      <aside class="sidebar">
+        <div class="user-info">
+          <div class="avatar" id="profileAvatar">
+            <img id="sidebarProfilePic" src="raa.jpg" alt="Profile">
+          </div>
+          <h3 id="userName">Guest User</h3>
+          <p id="userRole">Employee</p>
+          <p id="userDepartment"></p>
+        </div>
+        
+        <nav class="sidebar-nav">
+          <button class="nav-btn active" data-tab="dashboard" onclick="switchTab('dashboard')">
+            <i class="fas fa-tachometer-alt"></i> <span>Dashboard</span>
+          </button>
+          <button class="nav-btn" data-tab="mark-attendance" onclick="switchTab('mark-attendance')">
+            <i class="fas fa-pen"></i> <span>Mark Attendance</span>
+          </button>
+          <button class="nav-btn" data-tab="history" onclick="switchTab('history')">
+            <i class="fas fa-history"></i> <span>History</span>
+          </button>
+          <button class="nav-btn" data-tab="reports" onclick="switchTab('reports')">
+            <i class="fas fa-chart-bar"></i> <span>Reports</span>
+          </button>
+          <button class="nav-btn" data-tab="employees" onclick="switchTab('employees')">
+            <i class="fas fa-users"></i> <span>Employees</span>
+          </button>
+          <button class="nav-btn" data-tab="settings" onclick="switchTab('settings')">
+            <i class="fas fa-cog"></i> <span>Settings</span>
+          </button>
+          <button class="nav-btn" data-tab="saved-data" onclick="switchTab('saved-data')">
+            <i class="fas fa-database"></i> <span>Saved Data</span>
+          </button>
+          <button class="nav-btn" data-tab="present-employees" onclick="switchTab('present-employees')">
+            <i class="fas fa-user-check"></i> <span>Present Employees</span>
+          </button>
+        </nav>
+      </aside>
+
+      <!-- Main Content Area -->
+      <main class="content">
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="tab-content active">
+          <h2><i class="fas fa-tachometer-alt"></i> Dashboard</h2>
+          
+          <div class="stats-grid">
+            <div class="stat-card">
+              <i class="fas fa-users stat-icon"></i>
+              <div class="stat-info">
+                <span class="stat-label">Total Employees</span>
+                <span class="stat-value" id="totalEmployees">0</span>
+              </div>
+            </div>
+            
+            <div class="stat-card">
+              <i class="fas fa-check-circle stat-icon"></i>
+              <div class="stat-info">
+                <span class="stat-label">Present Today</span>
+                <span class="stat-value" id="presentToday">0</span>
+              </div>
+            </div>
+            
+            <div class="stat-card">
+              <i class="fas fa-clock stat-icon"></i>
+              <div class="stat-info">
+                <span class="stat-label">Late Arrivals</span>
+                <span class="stat-value" id="lateToday">0</span>
+              </div>
+            </div>
+            
+            <div class="stat-card">
+              <i class="fas fa-chart-line stat-icon"></i>
+              <div class="stat-info">
+                <span class="stat-label">Attendance Rate</span>
+                <span class="stat-value" id="attendanceRate">0%</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="insights-panel">
+            <h3><i class="fas fa-lightbulb"></i> Smart Insights</h3>
+            <div id="insightsList" class="insights-list"></div>
+          </div>
+
+          <div class="chart-container">
+            <canvas id="attendanceChart"></canvas>
+          </div>
+
+          <div class="recent-activity">
+            <h3>Recent Activity</h3>
+            <div class="activity-list" id="recentActivity">
+              <!-- Activity items will be inserted here -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Mark Attendance Tab -->
+        <div id="mark-attendance" class="tab-content">
+          <h2><i class="fas fa-pen"></i> Mark Attendance</h2>
+          
+          <div class="attendance-form-container">
+            <form id="attendanceForm" onsubmit="handleCheckIn(event)">
+              <div class="form-group">
+                <label for="employeeId"><i class="fas fa-id-card"></i> Employee ID</label>
+                <input type="text" id="employeeId" placeholder="Enter Employee ID" required />
+              </div>
+              
+              <div class="form-group">
+                <label for="name"><i class="fas fa-user"></i> Full Name</label>
+                <input type="text" id="name" placeholder="Enter your name" required />
+              </div>
+              
+              <div class="form-group">
+                <label for="department"><i class="fas fa-building"></i> Department</label>
+                <select id="department" required>
+                  <option value="">Select Department</option>
+                  <option value="IT">IT</option>
+                  <option value="HR">HR</option>
+                  <option value="Finance">Finance</option>
+                  <option value="Marketing">Marketing</option>
+                  <option value="Operations">Operations</option>
+                  <option value="Sales">Sales</option>
+                </select>
+              </div>
+              
+              <div class="form-group">
+                <label for="notes"><i class="fas fa-sticky-note"></i> Notes (Optional)</label>
+                <textarea id="notes" placeholder="Any additional notes..."></textarea>
+              </div>
+
+              <div class="form-group">
+                <label for="shift"><i class="fas fa-sun"></i> Shift</label>
+                <select id="shift" required>
+                  <option value="Day">Day</option>
+                  <option value="Night">Night</option>
+                  <option value="Extra Work">Extra Work</option>
+                </select>
+              </div>
+              
+              <div class="form-group">
+                <label><i class="fas fa-map-marker-alt"></i> Location</label>
+                <input type="text" id="location" placeholder="Auto-detected location" readonly />
+              </div>
+              
+              <button type="submit" id="checkInBtn" class="btn-primary">
+                <i class="fas fa-sign-in-alt"></i> Check In
+              </button>
+              
+              <button type="button" id="checkOutBtn" class="btn-secondary" onclick="handleCheckOut()">
+                <i class="fas fa-sign-out-alt"></i> Check Out
+              </button>
+            </form>
+            
+            <div class="current-status">
+              <h3>Today's Status</h3>
+              <div id="todayStatus" class="status-card">
+                <!-- Status will be displayed here -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- History Tab -->
+        <div id="history" class="tab-content">
+          <h2><i class="fas fa-history"></i> Attendance History</h2>
+          
+          <div class="filter-bar">
+            <input type="date" id="filterDate" />
+            <select id="filterDepartment">
+              <option value="">All Departments</option>
+              <option value="IT">IT</option>
+              <option value="HR">HR</option>
+              <option value="Finance">Finance</option>
+              <option value="Marketing">Marketing</option>
+              <option value="Operations">Operations</option>
+              <option value="Sales">Sales</option>
+            </select>
+            <select id="filterStatus">
+              <option value="">All Status</option>
+              <option value="Present">Present</option>
+              <option value="Late">Late</option>
+              <option value="Absent">Absent</option>
+              <option value="Half-Day">Half Day</option>
+            </select>
+            <button id="applyFilter" class="btn-filter" onclick="loadAttendanceHistory()">Apply Filter</button>
+            <button class="btn-secondary" onclick="exportToExcel()"><i class="fas fa-file-excel"></i> Export CSV</button>
+          </div>
+          
+          <div class="table-container">
+            <table id="attendanceTable">
+              <thead>
+                <tr>
+                  <th>Employee ID</th>
+                  <th>Name</th>
+                  <th>Department</th>
+                  <th>Shift</th>
+                  <th>Check In</th>
+                  <th>Check Out</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="attendanceList">
+                <!-- Data will be inserted here -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Reports Tab -->
+        <div id="reports" class="tab-content">
+          <h2><i class="fas fa-chart-bar"></i> Reports</h2>
+          
+          <div class="report-controls">
+            <div class="date-range">
+              <input type="date" id="reportStartDate" />
+              <span>to</span>
+              <input type="date" id="reportEndDate" />
+            </div>
+            <select id="reportDepartment">
+              <option value="">All Departments</option>
+              <option value="IT">IT</option>
+              <option value="HR">HR</option>
+              <option value="Finance">Finance</option>
+              <option value="Marketing">Marketing</option>
+            </select>
+            <button id="generateReport" class="btn-primary" onclick="generateReport()">Generate Report</button>
+            <button id="exportReport" class="btn-secondary" onclick="exportToPDF()">Export to PDF</button>
+          </div>
+          
+          <div id="reportContent"></div>
+        </div>
+
+        <!-- Employees Tab -->
+        <div id="employees" class="tab-content">
+          <h2><i class="fas fa-users"></i> Employee Management</h2>
+          
+          <div class="employee-actions">
+            <button id="addEmployeeBtn" class="btn-primary" onclick="showAddEmployeeModal()">
+              <i class="fas fa-plus"></i> Add Employee
+            </button>
+            <input type="text" id="employeeSearch" placeholder="Search employees..." oninput="filterEmployees()" />
+          </div>
+          
+          <div class="employees-grid" id="employeesGrid">
+            <!-- Employee cards will be inserted here -->
+          </div>
+        </div>
+
+        <!-- Settings Tab -->
+        <div id="settings" class="tab-content">
+          <h2><i class="fas fa-cog"></i> Settings</h2>
+          
+          <div class="settings-container">
+            <div class="settings-section">
+              <h3>Profile Settings</h3>
+              <div class="profile-upload">
+                <img id="profilePreview" src="raa.jpg" alt="Profile">
+                <input type="file" id="profileUpload" accept="image/*" onchange="uploadProfilePicture()">
+              </div>
+            </div>
+
+            <div class="settings-section">
+              <h3>Attendance Settings</h3>
+              <div class="form-group">
+                <label>Late Threshold (Time)</label>
+                <input type="time" id="lateThreshold" value="09:30" />
+              </div>
+              
+              <div class="form-group">
+                <label>Working Hours Start</label>
+                <input type="time" id="workStart" value="09:00" />
+              </div>
+              
+              <div class="form-group">
+                <label>Working Hours End</label>
+                <input type="time" id="workEnd" value="18:00" />
+              </div>
+            </div>
+
+            <div class="settings-section">
+              <h3>Notification Settings</h3>
+              <div class="form-group">
+                <label>
+                  <input type="checkbox" id="emailNotifications" checked> Email Notifications
+                </label>
+              </div>
+              <div class="form-group">
+                <label>
+                  <input type="checkbox" id="smsNotifications"> SMS Notifications
+                </label>
+              </div>
+            </div>
+            
+            <button id="saveSettings" class="btn-primary" onclick="saveSettings()">Save Settings</button>
+          </div>
+        </div>
+
+        <!-- Saved Data Tab -->
+        <div id="saved-data" class="tab-content">
+          <h2><i class="fas fa-database"></i> Saved Form Data</h2>
+          
+          <div class="saved-data-container">
+            <div class="saved-data-header">
+              <button class="btn-primary" onclick="loadSavedData()">
+                <i class="fas fa-sync-alt"></i> Refresh
+              </button>
+              <button class="btn-secondary" onclick="syncPendingActions()">
+                <i class="fas fa-cloud-upload-alt"></i> Sync Pending
+              </button>
+              <button class="btn-secondary" onclick="clearSavedData()">
+                <i class="fas fa-trash"></i> Clear All
+              </button>
+            </div>
+            <div class="pending-data-grid" id="pendingDataGrid"></div>
+            <div class="saved-data-grid" id="savedDataGrid">
+              <!-- Saved data will be displayed here -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Present Employees Tab -->
+        <div id="present-employees" class="tab-content">
+          <h2><i class="fas fa-user-check"></i> Present Employees</h2>
+
+          <div class="table-container">
+            <table id="presentEmployeesTable">
+              <thead>
+                <tr>
+                  <th>Employee ID</th>
+                  <th>Name</th>
+                  <th>Department</th>
+                  <th>Shift</th>
+                  <th>Check In</th>
+                  <th>Role</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="presentEmployeesList"></tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Login Modal -->
+  <div id="loginModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('loginModal')">&times;</span>
+      <h2>Login to Your Account</h2>
+      <form id="loginForm" onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="loginEmail" required placeholder="Enter your email">
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="loginPassword" required placeholder="Enter your password">
+        </div>
+        <button type="submit" class="btn-primary btn-block">Login</button>
+        <p class="text-center">Don't have an account? <a href="#" onclick="showRegisterModal()">Register</a></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- Register Modal -->
+  <div id="registerModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('registerModal')">&times;</span>
+      <h2>Create New Account</h2>
+      <form id="registerForm" onsubmit="handleRegister(event)">
+        <div class="form-group">
+          <label>Username</label>
+          <input type="text" id="regUsername" required placeholder="Choose a username">
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="regEmail" required placeholder="Enter your email">
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="regPassword" required placeholder="Minimum 6 characters">
+        </div>
+        <div class="form-group">
+          <label>Department</label>
+          <select id="regDepartment" required>
+            <option value="">Select Department</option>
+            <option value="IT">IT</option>
+            <option value="HR">HR</option>
+            <option value="Finance">Finance</option>
+            <option value="Marketing">Marketing</option>
+          </select>
+        </div>
+        <button type="submit" class="btn-primary btn-block">Register</button>
+        <p class="text-center">Already have an account? <a href="#" onclick="showLoginModal()">Login</a></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- Profile Edit Modal -->
+  <div id="profileModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('profileModal')">&times;</span>
+      <h2>Edit Profile</h2>
+      <form id="profileForm" onsubmit="saveProfile(event)">
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" id="profileName" required />
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="profileEmail" required />
+        </div>
+        <div class="form-group">
+          <label>Phone</label>
+          <input type="text" id="profilePhone" />
+        </div>
+        <div class="form-group">
+          <label>Department</label>
+          <select id="profileDepartment">
+            <option value="IT">IT</option>
+            <option value="HR">HR</option>
+            <option value="Finance">Finance</option>
+            <option value="Marketing">Marketing</option>
+            <option value="Operations">Operations</option>
+            <option value="Sales">Sales</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Role</label>
+          <select id="profileRole">
+            <option value="admin">Admin</option>
+            <option value="vice_admin">Vice Admin</option>
+          </select>
+        </div>
+        <button type="submit" class="btn-primary btn-block">Save Changes</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast"></div>
+
+  <!-- Add Employee Modal -->
+  <div id="addEmployeeModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('addEmployeeModal')">&times;</span>
+      <h2>Add New Employee</h2>
+      <form id="addEmployeeForm" onsubmit="addEmployee(event)">
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" id="empName" required>
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="empEmail" required>
+        </div>
+        <div class="form-group">
+          <label>Department</label>
+          <select id="empDepartment" required>
+            <option value="IT">IT</option>
+            <option value="HR">HR</option>
+            <option value="Finance">Finance</option>
+            <option value="Marketing">Marketing</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Role</label>
+          <select id="empRole" required>
+            <option value="employee">Employee</option>
+            <option value="manager">Manager</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+        <button type="submit" class="btn-primary btn-block">Add Employee</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
+
+
+
+

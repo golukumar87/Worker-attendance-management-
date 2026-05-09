@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Leave Approval Workflow | AttendPro</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="hero-style.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
+</head>
+<body>
+  <header class="page-hero">
+    <nav class="hero-nav">
+      <div class="nav-container">
+        <div class="logo">
+          <i class="fas fa-clock"></i>
+          <span>AttendPro</span>
+        </div>
+        <ul class="nav-menu">
+          <li><a href="index.html" class="nav-link">Home</a></li>
+          <li><a href="features.html" class="nav-link">Features</a></li>
+          <li><a href="dashboard.html" class="nav-link">Dashboard</a></li>
+          <li><a href="about.html" class="nav-link">About</a></li>
+          <li><a href="contact.html" class="nav-link">Contact</a></li>
+        </ul>
+        <div class="hamburger">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+    </nav>
+    <div class="page-hero-content">
+      <h1 class="page-hero-title">Leave Approval Workflow</h1>
+      <p class="page-hero-subtitle">Multi-level approval, escalation, and policy enforcement.</p>
+    </div>
+  </header>
+
+  <section class="page-section">
+    <div class="container">
+      <div class="detail-card feature-box">
+        <h2>Approval Settings</h2>
+        <form id="leaveForm" class="detail-form">
+          <div class="detail-field">
+            <label>Approval Levels</label>
+            <input type="number" id="approvalLevels" placeholder="e.g. 2" />
+          </div>
+          <div class="detail-field">
+            <label>Auto Escalation (hours)</label>
+            <input type="number" id="escalationHours" placeholder="e.g. 24" />
+          </div>
+          <div class="detail-toggle">
+            <label>Auto Approve Balance Check</label>
+            <input type="checkbox" id="autoBalance" checked />
+          </div>
+          <div class="detail-form-actions">
+            <button class="hero-btn-primary" type="submit"><i class="fas fa-save"></i> Save Settings</button>
+            <button class="hero-btn-secondary" type="button" id="resetLeave"><i class="fas fa-rotate-left"></i> Reset</button>
+          </div>
+        </form>
+        <div id="leaveMsg" class="demo-result"></div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    const key = 'leaveWorkflowSettings';
+    const form = document.getElementById('leaveForm');
+    const msg = document.getElementById('leaveMsg');
+    const approvalLevels = document.getElementById('approvalLevels');
+    const escalationHours = document.getElementById('escalationHours');
+    const autoBalance = document.getElementById('autoBalance');
+    const resetBtn = document.getElementById('resetLeave');
+
+    function loadSettings() {
+      const data = JSON.parse(localStorage.getItem(key) || '{}');
+      approvalLevels.value = data.approvalLevels || '';
+      escalationHours.value = data.escalationHours || '';
+      autoBalance.checked = data.autoBalance !== false;
+    }
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const data = {
+        approvalLevels: approvalLevels.value,
+        escalationHours: escalationHours.value,
+        autoBalance: autoBalance.checked
+      };
+      localStorage.setItem(key, JSON.stringify(data));
+      msg.textContent = 'Leave workflow settings saved.';
+    });
+
+    resetBtn.addEventListener('click', () => {
+      localStorage.removeItem(key);
+      loadSettings();
+      msg.textContent = 'Settings reset.';
+    });
+
+    loadSettings();
+  </script>
+</body>
+</html>
+

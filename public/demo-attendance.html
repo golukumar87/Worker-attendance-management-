@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Quick Demo - Mark Attendance</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="hero-style.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
+  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+  <style>
+    .demo-page { padding: 40px 0; }
+    .demo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+    .demo-card { background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(148, 163, 184, 0.2); border-radius: 18px; padding: 22px; color: #e2e8f0; }
+    .demo-card h2 { margin-bottom: 10px; }
+    .demo-field { display: grid; gap: 6px; margin-bottom: 12px; }
+    .demo-field label { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #94a3b8; }
+    .demo-field input, .demo-field select { background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(148, 163, 184, 0.35); border-radius: 10px; padding: 10px 12px; color: #e2e8f0; }
+    .demo-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+    .demo-result { margin-top: 12px; font-size: 0.9rem; color: #cbd5f5; word-break: break-word; }
+  </style>
+</head>
+<body>
+  <header class="page-hero">
+    <nav class="hero-nav">
+      <div class="nav-container">
+        <div class="logo">
+          <i class="fas fa-clock"></i>
+          <span>AttendPro</span>
+        </div>
+        <ul class="nav-menu">
+          <li><a href="index.html" class="nav-link">Home</a></li>
+          <li><a href="features.html" class="nav-link">Features</a></li>
+          <li><a href="dashboard.html" class="nav-link">Dashboard</a></li>
+          <li><a href="about.html" class="nav-link">About</a></li>
+          <li><a href="contact.html" class="nav-link">Contact</a></li>
+        </ul>
+        <div class="hamburger">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+    </nav>
+    <div class="page-hero-content">
+      <h1 class="page-hero-title">Mark Attendance Demo</h1>
+      <p class="page-hero-subtitle">Check-in with location and optional notes.</p>
+      <div class="page-hero-actions">
+        <button class="hero-btn-primary" onclick="location.href='features.html#demo'"><i class="fas fa-arrow-left"></i> Back to Demo</button>
+      </div>
+    </div>
+  </header>
+
+  <section class="page-section demo-page">
+    <div class="container demo-grid">
+      <div class="demo-card">
+        <h2>Check-in</h2>
+        <form id="checkinForm">
+          <div class="demo-field">
+            <label>Employee Name</label>
+            <input type="text" name="name" placeholder="Enter name" required />
+          </div>
+          <div class="demo-field">
+            <label>Employee ID</label>
+            <input type="text" name="employeeId" placeholder="EMP1001" required />
+          </div>
+          <div class="demo-field">
+            <label>Department</label>
+            <select name="department">
+              <option value="IT">IT</option>
+              <option value="HR">HR</option>
+              <option value="Finance">Finance</option>
+              <option value="Marketing">Marketing</option>
+              <option value="Operations">Operations</option>
+              <option value="Sales">Sales</option>
+            </select>
+          </div>
+          <div class="demo-field">
+            <label>Shift</label>
+            <select name="shift">
+              <option value="Day">Day</option>
+              <option value="Night">Night</option>
+              <option value="Extra Work">Extra Work</option>
+            </select>
+          </div>
+          <div class="demo-field">
+            <label>Location</label>
+            <input type="text" name="location" id="checkinLocation" placeholder="Office / Site" />
+          </div>
+          <input type="hidden" name="locationLat" id="checkinLat" />
+          <input type="hidden" name="locationLng" id="checkinLng" />
+          <input type="hidden" name="locationAccuracy" id="checkinAcc" />
+          <div class="demo-field">
+            <label>Notes</label>
+            <input type="text" name="notes" placeholder="Optional notes" />
+          </div>
+          <div class="demo-actions">
+            <button class="hero-btn-primary" type="submit"><i class="fas fa-pen"></i> Check-in</button>
+            <button class="hero-btn-secondary" type="button" id="useLocationBtn"><i class="fas fa-location-arrow"></i> Use My Location</button>
+            <button class="hero-btn-secondary" type="reset"><i class="fas fa-rotate-left"></i> Reset</button>
+          </div>
+        </form>
+        <div class="demo-result" id="checkinResult"></div>
+      </div>
+
+      <div class="demo-card">
+        <h2>Check-out</h2>
+        <form id="checkoutForm">
+          <div class="demo-field">
+            <label>Employee ID</label>
+            <input type="text" name="employeeId" placeholder="EMP1001" required />
+          </div>
+          <div class="demo-field">
+            <label>Location</label>
+            <input type="text" name="location" id="checkoutLocation" placeholder="Office / Site" />
+          </div>
+          <div class="demo-actions">
+            <button class="hero-btn-primary" type="submit"><i class="fas fa-sign-out-alt"></i> Check-out</button>
+            <button class="hero-btn-secondary" type="reset"><i class="fas fa-rotate-left"></i> Reset</button>
+          </div>
+        </form>
+        <div class="demo-result" id="checkoutResult"></div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    const API_BASE = (() => {
+      if (window.location.protocol === 'file:') return 'http://localhost:3000';
+      if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        if (window.location.port && window.location.port !== '3000') {
+          return 'http://localhost:3000';
+        }
+      }
+      return window.location.origin;
+    })();
+
+    const apiUrl = (path) => `${API_BASE}${path}`;
+
+    const checkinForm = document.getElementById('checkinForm');
+    const checkoutForm = document.getElementById('checkoutForm');
+    const checkinResult = document.getElementById('checkinResult');
+    const checkoutResult = document.getElementById('checkoutResult');
+    const useLocationBtn = document.getElementById('useLocationBtn');
+    const checkinLocation = document.getElementById('checkinLocation');
+    const checkinLat = document.getElementById('checkinLat');
+    const checkinLng = document.getElementById('checkinLng');
+    const checkinAcc = document.getElementById('checkinAcc');
+    const checkoutLocation = document.getElementById('checkoutLocation');
+
+    async function fillLocation() {
+      if (!navigator.geolocation) {
+        checkinResult.textContent = 'Geolocation not supported in this browser.';
+        return;
+      }
+      navigator.geolocation.getCurrentPosition((pos) => {
+        const { latitude, longitude, accuracy } = pos.coords;
+        checkinLat.value = latitude;
+        checkinLng.value = longitude;
+        checkinAcc.value = accuracy;
+        const label = `Lat ${latitude.toFixed(5)}, Lng ${longitude.toFixed(5)}`;
+        checkinLocation.value = label;
+        if (!checkoutLocation.value) checkoutLocation.value = label;
+        checkinResult.textContent = `Location captured (${Math.round(accuracy)}m accuracy).`;
+      }, () => {
+        checkinResult.textContent = 'Unable to fetch location. Please allow location access.';
+      }, { enableHighAccuracy: true, timeout: 8000 });
+    }
+
+    checkinForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(checkinForm);
+      const payload = Object.fromEntries(formData.entries());
+      const res = await fetch(apiUrl('/api/attendance/checkin'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json().catch(() => ({}));
+      checkinResult.textContent = data.message || (data.success ? 'Check-in successful.' : 'Check-in failed.');
+    });
+
+    useLocationBtn.addEventListener('click', fillLocation);
+
+    checkoutForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(checkoutForm);
+      const payload = Object.fromEntries(formData.entries());
+      const employeeId = payload.employeeId || '';
+      const res = await fetch(apiUrl(`/api/attendance/checkout/${employeeId}`), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ location: payload.location || '' })
+      });
+      const data = await res.json().catch(() => ({}));
+      checkoutResult.textContent = data.message || (data.success ? 'Check-out successful.' : 'Check-out failed.');
+    });
+  </script>
+</body>
+</html>

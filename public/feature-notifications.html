@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Smart Notifications | AttendPro</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="hero-style.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
+</head>
+<body>
+  <header class="page-hero">
+    <nav class="hero-nav">
+      <div class="nav-container">
+        <div class="logo">
+          <i class="fas fa-clock"></i>
+          <span>AttendPro</span>
+        </div>
+        <ul class="nav-menu">
+          <li><a href="index.html" class="nav-link">Home</a></li>
+          <li><a href="features.html" class="nav-link">Features</a></li>
+          <li><a href="dashboard.html" class="nav-link">Dashboard</a></li>
+          <li><a href="about.html" class="nav-link">About</a></li>
+          <li><a href="contact.html" class="nav-link">Contact</a></li>
+        </ul>
+        <div class="hamburger">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+    </nav>
+    <div class="page-hero-content">
+      <h1 class="page-hero-title">Smart Notifications</h1>
+      <p class="page-hero-subtitle">Automatic alerts for late arrivals, absences, or missing check-outs.</p>
+    </div>
+  </header>
+
+  <section class="page-section">
+    <div class="container">
+      <div class="detail-card feature-box">
+        <div class="feature-detail-layout">
+          <div class="feature-visual feature-visual-notifications">
+            <i class="fas fa-bell"></i>
+            <span>Alert Center</span>
+            <div class="feature-visual-caption">Stay ahead of issues</div>
+          </div>
+          <div class="feature-detail-content">
+            <h2>Notification Controls</h2>
+            <form id="notifyForm" class="detail-form">
+              <div class="detail-toggle">
+                <label>Email Alerts</label>
+                <input type="checkbox" id="notifyEmail" checked />
+              </div>
+              <div class="detail-toggle">
+                <label>SMS Alerts</label>
+                <input type="checkbox" id="notifySms" />
+              </div>
+              <div class="detail-toggle">
+                <label>WhatsApp Alerts</label>
+                <input type="checkbox" id="notifyWhatsapp" />
+              </div>
+              <div class="detail-field">
+                <label>Late After (minutes)</label>
+                <input type="number" id="notifyLate" min="1" max="180" placeholder="e.g. 10" />
+              </div>
+              <div class="detail-field">
+                <label>Absence After (hours)</label>
+                <input type="number" id="notifyAbsence" min="1" max="24" placeholder="e.g. 4" />
+              </div>
+              <div class="detail-field">
+                <label>Daily Digest Time</label>
+                <input type="time" id="notifyDigest" />
+              </div>
+              <div class="detail-toggle">
+                <label>Supervisor Escalations</label>
+                <input type="checkbox" id="notifyEscalation" checked />
+              </div>
+              <div class="detail-form-actions">
+                <button class="hero-btn-primary" type="submit"><i class="fas fa-save"></i> Save Settings</button>
+                <button class="hero-btn-secondary" type="button" id="notifyReset"><i class="fas fa-rotate-left"></i> Reset</button>
+                <a class="hero-btn-secondary" href="dashboard.html">Open Dashboard</a>
+              </div>
+            </form>
+            <div id="notifyMsg" class="demo-result"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    const key = 'notificationSettings';
+    const form = document.getElementById('notifyForm');
+    const msg = document.getElementById('notifyMsg');
+
+    const fields = {
+      email: document.getElementById('notifyEmail'),
+      sms: document.getElementById('notifySms'),
+      whatsapp: document.getElementById('notifyWhatsapp'),
+      late: document.getElementById('notifyLate'),
+      absence: document.getElementById('notifyAbsence'),
+      digest: document.getElementById('notifyDigest'),
+      escalation: document.getElementById('notifyEscalation')
+    };
+
+    function loadSettings() {
+      const data = JSON.parse(localStorage.getItem(key) || '{}');
+      fields.email.checked = data.email !== false;
+      fields.sms.checked = Boolean(data.sms);
+      fields.whatsapp.checked = Boolean(data.whatsapp);
+      fields.late.value = data.late || '';
+      fields.absence.value = data.absence || '';
+      fields.digest.value = data.digest || '';
+      fields.escalation.checked = data.escalation !== false;
+    }
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const data = {
+        email: fields.email.checked,
+        sms: fields.sms.checked,
+        whatsapp: fields.whatsapp.checked,
+        late: fields.late.value,
+        absence: fields.absence.value,
+        digest: fields.digest.value,
+        escalation: fields.escalation.checked
+      };
+      localStorage.setItem(key, JSON.stringify(data));
+      msg.textContent = 'Notification settings saved.';
+    });
+
+    document.getElementById('notifyReset').addEventListener('click', () => {
+      localStorage.removeItem(key);
+      loadSettings();
+      msg.textContent = 'Settings reset.';
+    });
+
+    loadSettings();
+  </script>
+</body>
+</html>

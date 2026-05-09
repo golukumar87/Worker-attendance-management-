@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Quick Demo - Register & Login</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="hero-style.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
+  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+  <style>
+    .demo-page { padding: 40px 0; }
+    .demo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+    .demo-card { background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(148, 163, 184, 0.2); border-radius: 18px; padding: 22px; color: #e2e8f0; }
+    .demo-card h2 { margin-bottom: 10px; }
+    .demo-field { display: grid; gap: 6px; margin-bottom: 12px; }
+    .demo-field label { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #94a3b8; }
+    .demo-field input, .demo-field select { background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(148, 163, 184, 0.35); border-radius: 10px; padding: 10px 12px; color: #e2e8f0; }
+    .demo-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+    .demo-result { margin-top: 12px; font-size: 0.9rem; color: #cbd5f5; word-break: break-word; }
+  </style>
+</head>
+<body>
+  <header class="page-hero">
+    <nav class="hero-nav">
+      <div class="nav-container">
+        <div class="logo">
+          <i class="fas fa-clock"></i>
+          <span>AttendPro</span>
+        </div>
+        <ul class="nav-menu">
+          <li><a href="index.html" class="nav-link">Home</a></li>
+          <li><a href="features.html" class="nav-link">Features</a></li>
+          <li><a href="dashboard.html" class="nav-link">Dashboard</a></li>
+          <li><a href="about.html" class="nav-link">About</a></li>
+          <li><a href="contact.html" class="nav-link">Contact</a></li>
+        </ul>
+        <div class="hamburger">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+    </nav>
+    <div class="page-hero-content">
+      <h1 class="page-hero-title">Register & Login Demo</h1>
+      <p class="page-hero-subtitle">Create your account and sign in securely.</p>
+      <div class="page-hero-actions">
+        <button class="hero-btn-primary" onclick="location.href='features.html#demo'"><i class="fas fa-arrow-left"></i> Back to Demo</button>
+      </div>
+    </div>
+  </header>
+
+  <section class="page-section demo-page">
+    <div class="container demo-grid">
+      <div class="demo-card">
+        <h2>Register</h2>
+        <form id="registerForm">
+          <div class="demo-field">
+            <label>Username</label>
+            <input type="text" name="username" placeholder="Enter username" required />
+          </div>
+          <div class="demo-field">
+            <label>Email</label>
+            <input type="email" name="email" placeholder="Enter email" required />
+          </div>
+          <div class="demo-field">
+            <label>Password</label>
+            <input type="password" name="password" placeholder="Create password" required />
+          </div>
+          <div class="demo-field">
+            <label>Department</label>
+            <select name="department">
+              <option value="IT">IT</option>
+              <option value="HR">HR</option>
+              <option value="Finance">Finance</option>
+              <option value="Marketing">Marketing</option>
+              <option value="Operations">Operations</option>
+              <option value="Sales">Sales</option>
+            </select>
+          </div>
+          <div class="demo-actions">
+            <button class="hero-btn-primary" type="submit"><i class="fas fa-user-plus"></i> Register</button>
+            <button class="hero-btn-secondary" type="reset"><i class="fas fa-rotate-left"></i> Reset</button>
+          </div>
+        </form>
+        <div class="demo-result" id="registerResult"></div>
+      </div>
+
+      <div class="demo-card">
+        <h2>Login</h2>
+        <form id="loginForm">
+          <div class="demo-field">
+            <label>Email</label>
+            <input type="email" name="email" placeholder="Enter email" required />
+          </div>
+          <div class="demo-field">
+            <label>Password</label>
+            <input type="password" name="password" placeholder="Enter password" required />
+          </div>
+          <div class="demo-actions">
+            <button class="hero-btn-primary" type="submit"><i class="fas fa-sign-in-alt"></i> Login</button>
+            <button class="hero-btn-secondary" type="reset"><i class="fas fa-rotate-left"></i> Reset</button>
+          </div>
+        </form>
+        <div class="demo-result" id="loginResult"></div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    const API_BASE = (() => {
+      if (window.location.protocol === 'file:') return 'http://localhost:3000';
+      if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        if (window.location.port && window.location.port !== '3000') {
+          return 'http://localhost:3000';
+        }
+      }
+      return window.location.origin;
+    })();
+
+    const apiUrl = (path) => `${API_BASE}${path}`;
+
+    const registerForm = document.getElementById('registerForm');
+    const loginForm = document.getElementById('loginForm');
+    const registerResult = document.getElementById('registerResult');
+    const loginResult = document.getElementById('loginResult');
+
+    registerForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(registerForm);
+      const payload = Object.fromEntries(formData.entries());
+      const res = await fetch(apiUrl('/api/auth/register'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json().catch(() => ({}));
+      registerResult.textContent = data.message || (data.success ? 'Registered successfully.' : 'Registration failed.');
+    });
+
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(loginForm);
+      const payload = Object.fromEntries(formData.entries());
+      const res = await fetch(apiUrl('/api/auth/login'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json().catch(() => ({}));
+      if (data.token) {
+        sessionStorage.setItem('token', data.token);
+      }
+      loginResult.textContent = data.message || (data.success ? 'Login successful.' : 'Login failed.');
+    });
+  </script>
+</body>
+</html>

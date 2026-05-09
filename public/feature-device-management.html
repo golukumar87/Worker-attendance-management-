@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Device Management | AttendPro</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="hero-style.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
+</head>
+<body>
+  <header class="page-hero">
+    <nav class="hero-nav">
+      <div class="nav-container">
+        <div class="logo">
+          <i class="fas fa-clock"></i>
+          <span>AttendPro</span>
+        </div>
+        <ul class="nav-menu">
+          <li><a href="index.html" class="nav-link">Home</a></li>
+          <li><a href="features.html" class="nav-link">Features</a></li>
+          <li><a href="dashboard.html" class="nav-link">Dashboard</a></li>
+          <li><a href="about.html" class="nav-link">About</a></li>
+          <li><a href="contact.html" class="nav-link">Contact</a></li>
+        </ul>
+        <div class="hamburger">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+    </nav>
+    <div class="page-hero-content">
+      <h1 class="page-hero-title">Device Management</h1>
+      <p class="page-hero-subtitle">Approve, track, and control devices securely.</p>
+    </div>
+  </header>
+
+  <section class="page-section">
+    <div class="container">
+      <div class="detail-card feature-box">
+        <h2>Device Controls</h2>
+        <form id="deviceForm" class="detail-form">
+          <div class="detail-field">
+            <label>Max Devices per User</label>
+            <input type="number" id="deviceLimit" placeholder="e.g. 2" />
+          </div>
+          <div class="detail-toggle">
+            <label>Auto Approve Known Devices</label>
+            <input type="checkbox" id="autoApprove" checked />
+          </div>
+          <div class="detail-form-actions">
+            <button class="hero-btn-primary" type="submit"><i class="fas fa-save"></i> Save Settings</button>
+            <button class="hero-btn-secondary" type="button" id="resetDevice"><i class="fas fa-rotate-left"></i> Reset</button>
+          </div>
+        </form>
+        <div id="deviceMsg" class="demo-result"></div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    const key = 'deviceManagementSettings';
+    const form = document.getElementById('deviceForm');
+    const msg = document.getElementById('deviceMsg');
+    const deviceLimit = document.getElementById('deviceLimit');
+    const autoApprove = document.getElementById('autoApprove');
+    const resetBtn = document.getElementById('resetDevice');
+
+    function loadSettings() {
+      const data = JSON.parse(localStorage.getItem(key) || '{}');
+      deviceLimit.value = data.deviceLimit || '';
+      autoApprove.checked = data.autoApprove !== false;
+    }
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const data = {
+        deviceLimit: deviceLimit.value,
+        autoApprove: autoApprove.checked
+      };
+      localStorage.setItem(key, JSON.stringify(data));
+      msg.textContent = 'Device management settings saved.';
+    });
+
+    resetBtn.addEventListener('click', () => {
+      localStorage.removeItem(key);
+      loadSettings();
+      msg.textContent = 'Settings reset.';
+    });
+
+    loadSettings();
+  </script>
+</body>
+</html>
+

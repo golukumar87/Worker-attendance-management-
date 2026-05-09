@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CSV & PDF Export | AttendPro</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="hero-style.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
+</head>
+<body>
+  <header class="page-hero">
+    <nav class="hero-nav">
+      <div class="nav-container">
+        <div class="logo">
+          <i class="fas fa-clock"></i>
+          <span>AttendPro</span>
+        </div>
+        <ul class="nav-menu">
+          <li><a href="index.html" class="nav-link">Home</a></li>
+          <li><a href="features.html" class="nav-link">Features</a></li>
+          <li><a href="dashboard.html" class="nav-link">Dashboard</a></li>
+          <li><a href="about.html" class="nav-link">About</a></li>
+          <li><a href="contact.html" class="nav-link">Contact</a></li>
+        </ul>
+        <div class="hamburger">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+    </nav>
+    <div class="page-hero-content">
+      <h1 class="page-hero-title">CSV & PDF Export</h1>
+      <p class="page-hero-subtitle">Export reports for audits, compliance, or payroll processing.</p>
+    </div>
+  </header>
+
+  <section class="page-section">
+    <div class="container">
+      <div class="detail-card feature-box">
+        <h2>Export Report</h2>
+        <form id="exportForm" class="detail-form">
+          <div class="detail-field">
+            <label>Start Date</label>
+            <input type="date" id="startDate" required />
+          </div>
+          <div class="detail-field">
+            <label>End Date</label>
+            <input type="date" id="endDate" required />
+          </div>
+          <div class="detail-field">
+            <label>Department</label>
+            <select id="department">
+              <option value="">All</option>
+              <option value="IT">IT</option>
+              <option value="HR">HR</option>
+              <option value="Finance">Finance</option>
+              <option value="Marketing">Marketing</option>
+              <option value="Operations">Operations</option>
+              <option value="Sales">Sales</option>
+            </select>
+          </div>
+          <div class="detail-form-actions">
+            <button class="hero-btn-primary" type="submit"><i class="fas fa-sync"></i> Load Report</button>
+            <button class="hero-btn-secondary" type="button" id="exportCsv"><i class="fas fa-file-csv"></i> Export CSV</button>
+            <button class="hero-btn-secondary" type="button" id="exportPdf"><i class="fas fa-file-pdf"></i> Export PDF</button>
+          </div>
+        </form>
+        <div id="exportMsg" class="demo-result"></div>
+        <div class="table-wrapper" style="margin-top: 16px;">
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Total</th>
+                <th>Present</th>
+                <th>Late</th>
+                <th>Absent</th>
+              </tr>
+            </thead>
+            <tbody id="exportTable">
+              <tr><td colspan="5">No data loaded.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    const API_BASE = (() => {
+      if (window.location.protocol === 'file:') return 'http://localhost:3000';
+      if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        if (window.location.port && window.location.port !== '3000') return 'http://localhost:3000';
+      }
+      return window.location.origin;
+    })();
+
+    const apiUrl = (path) => `${API_BASE}${path}`;
+
+    const exportForm = document.getElementById('exportForm');
+    const exportMsg = document.getElementById('exportMsg');
+    const exportTable = document.getElementById('exportTable');
+    const exportCsv = document.getElementById('exportCsv');
+    const exportPdf = document.getElementById('exportPdf');
+    let lastReport = [];
+
+    exportForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const params = new URLSearchParams({
+        startDate: document.getElementById('startDate').value,
+        endDate: document.getElementById('endDate').value,
+        department: document.getElementById('department').value
+      });
+      const res = await fetch(apiUrl(`/api/attendance/report?${params.toString()}`));
+      const data = await res.json().catch(() => ({}));
+      if (!data.success) {
+        exportMsg.textContent = data.message || 'Unable to load report.';
+        return;
+      }
+      lastReport = data.data || [];
+      exportMsg.textContent = `Loaded ${lastReport.length} day(s).`;
+      if (!lastReport.length) {
+        exportTable.innerHTML = '<tr><td colspan="5">No records found.</td></tr>';
+        return;
+      }
+      exportTable.innerHTML = lastReport.map(row => `
+        <tr>
+          <td>${row.date}</td>
+          <td>${row.total}</td>
+          <td>${row.present}</td>
+          <td>${row.late}</td>
+          <td>${row.absent}</td>
+        </tr>
+      `).join('');
+    });
+
+    exportCsv.addEventListener('click', () => {
+      if (!lastReport.length) {
+        exportMsg.textContent = 'Load a report first.';
+        return;
+      }
+      const headers = ['Date', 'Total', 'Present', 'Late', 'Absent'];
+      const rows = lastReport.map(row => [row.date, row.total, row.present, row.late, row.absent]);
+      const csv = [headers, ...rows].map(line => line.join(',')).join('\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'attendance-report.csv';
+      link.click();
+      URL.revokeObjectURL(url);
+    });
+
+    exportPdf.addEventListener('click', () => {
+      if (!lastReport.length) {
+        exportMsg.textContent = 'Load a report first.';
+        return;
+      }
+      const rows = lastReport.map(row => `
+        <tr>
+          <td>${row.date}</td>
+          <td>${row.total}</td>
+          <td>${row.present}</td>
+          <td>${row.late}</td>
+          <td>${row.absent}</td>
+        </tr>
+      `).join('');
+      const win = window.open('', '_blank');
+      win.document.write(`
+        <html>
+          <head>
+            <title>Attendance Report</title>
+            <style>
+              body { font-family: Arial, sans-serif; padding: 20px; }
+              table { width: 100%; border-collapse: collapse; }
+              th, td { border-bottom: 1px solid #ddd; padding: 8px; text-align: left; }
+            </style>
+          </head>
+          <body>
+            <h1>Attendance Report</h1>
+            <table>
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Total</th>
+                  <th>Present</th>
+                  <th>Late</th>
+                  <th>Absent</th>
+                </tr>
+              </thead>
+              <tbody>${rows}</tbody>
+            </table>
+          </body>
+        </html>
+      `);
+      win.document.close();
+      win.focus();
+      win.print();
+    });
+  </script>
+</body>
+</html>
+

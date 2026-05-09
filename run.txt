@@ -1,0 +1,6 @@
+1.npm init -y
+2. npm install express mongoose cors dotenv bcryptjs jsonwebtoken express-validator socket.io moment express-session connect-mongo
+3.npm install --save-dev nodemon
+4. start kre mongo
+net start MongoDB
+5.npm run dev

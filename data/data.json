@@ -1,0 +1,95 @@
+[
+  {
+    "id": 1774381593520,
+    "type": "checkin",
+    "employeeId": "sdfgh",
+    "name": "dfghjk",
+    "department": "Sales",
+    "location": "Location access denied",
+    "timestamp": "2026-03-24T19:46:33.520Z"
+  },
+  {
+    "id": 1774386033213,
+    "type": "checkin",
+    "employeeId": "12345",
+    "name": "golu",
+    "department": "Marketing",
+    "location": "Location access denied",
+    "timestamp": "2026-03-24T21:00:33.213Z"
+  },
+  {
+    "id": 1774386064018,
+    "type": "checkout",
+    "employeeId": "12345",
+    "timestamp": "2026-03-24T21:01:04.018Z"
+  },
+  {
+    "id": 1774387523024,
+    "type": "checkin",
+    "employeeId": "ass",
+    "name": "aSDFG",
+    "department": "HR",
+    "location": "Location access denied",
+    "timestamp": "2026-03-24T21:25:23.024Z"
+  },
+  {
+    "id": 1774387544860,
+    "type": "checkout",
+    "employeeId": "ass",
+    "timestamp": "2026-03-24T21:25:44.860Z"
+  },
+  {
+    "id": 1774387823570,
+    "type": "checkin",
+    "employeeId": "3456",
+    "name": "asdfg",
+    "department": "IT",
+    "location": "Location access denied",
+    "timestamp": "2026-03-24T21:30:23.570Z"
+  },
+  {
+    "id": 1774387832095,
+    "type": "checkout",
+    "employeeId": "3456",
+    "timestamp": "2026-03-24T21:30:32.095Z"
+  },
+  {
+    "id": 1774387871672,
+    "type": "checkin",
+    "employeeId": "2323",
+    "name": "wwww",
+    "department": "IT",
+    "location": "Location access denied",
+    "timestamp": "2026-03-24T21:31:11.672Z"
+  },
+  {
+    "id": 1774388295996,
+    "type": "checkin",
+    "employeeId": "789",
+    "name": "qwe",
+    "department": "HR",
+    "location": "Location access denied",
+    "timestamp": "2026-03-24T21:38:15.996Z"
+  },
+  {
+    "id": 1774388305898,
+    "type": "checkout",
+    "employeeId": "789",
+    "timestamp": "2026-03-24T21:38:25.898Z"
+  },
+  {
+    "id": 1774388333737,
+    "type": "checkin",
+    "employeeId": "567",
+    "name": "dfg",
+    "department": "IT",
+    "location": "Location access denied",
+    "timestamp": "2026-03-24T21:38:53.737Z"
+  },
+  {
+    "id": 1774388345642,
+    "type": "checkout",
+    "employeeId": "567",
+    "timestamp": "2026-03-24T21:39:05.642Z"
+  }
+]

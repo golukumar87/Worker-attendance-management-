@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Shift Automation | AttendPro</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="hero-style.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
+</head>
+<body>
+  <header class="page-hero">
+    <nav class="hero-nav">
+      <div class="nav-container">
+        <div class="logo">
+          <i class="fas fa-clock"></i>
+          <span>AttendPro</span>
+        </div>
+        <ul class="nav-menu">
+          <li><a href="index.html" class="nav-link">Home</a></li>
+          <li><a href="features.html" class="nav-link">Features</a></li>
+          <li><a href="dashboard.html" class="nav-link">Dashboard</a></li>
+          <li><a href="about.html" class="nav-link">About</a></li>
+          <li><a href="contact.html" class="nav-link">Contact</a></li>
+        </ul>
+        <div class="hamburger">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+    </nav>
+    <div class="page-hero-content">
+      <h1 class="page-hero-title">Shift Automation</h1>
+      <p class="page-hero-subtitle">Auto-assign shifts, manage rotation, and handle overtime rules.</p>
+    </div>
+  </header>
+
+  <section class="page-section">
+    <div class="container">
+      <div class="detail-card feature-box">
+        <h2>Automation Settings</h2>
+        <form id="shiftForm" class="detail-form">
+          <div class="detail-field">
+            <label>Rotation Cycle (days)</label>
+            <input type="number" id="rotationCycle" placeholder="e.g. 7" />
+          </div>
+          <div class="detail-field">
+            <label>Max Overtime (hours)</label>
+            <input type="number" id="maxOvertime" placeholder="e.g. 4" />
+          </div>
+          <div class="detail-toggle">
+            <label>Auto Assign Enabled</label>
+            <input type="checkbox" id="autoAssign" checked />
+          </div>
+          <div class="detail-form-actions">
+            <button class="hero-btn-primary" type="submit"><i class="fas fa-save"></i> Save Settings</button>
+            <button class="hero-btn-secondary" type="button" id="resetShift"><i class="fas fa-rotate-left"></i> Reset</button>
+          </div>
+        </form>
+        <div id="shiftMsg" class="demo-result"></div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    const key = 'shiftAutomationSettings';
+    const form = document.getElementById('shiftForm');
+    const msg = document.getElementById('shiftMsg');
+    const rotationCycle = document.getElementById('rotationCycle');
+    const maxOvertime = document.getElementById('maxOvertime');
+    const autoAssign = document.getElementById('autoAssign');
+    const resetBtn = document.getElementById('resetShift');
+
+    function loadSettings() {
+      const data = JSON.parse(localStorage.getItem(key) || '{}');
+      rotationCycle.value = data.rotationCycle || '';
+      maxOvertime.value = data.maxOvertime || '';
+      autoAssign.checked = data.autoAssign !== false;
+    }
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const data = {
+        rotationCycle: rotationCycle.value,
+        maxOvertime: maxOvertime.value,
+        autoAssign: autoAssign.checked
+      };
+      localStorage.setItem(key, JSON.stringify(data));
+      msg.textContent = 'Shift automation settings saved.';
+    });
+
+    resetBtn.addEventListener('click', () => {
+      localStorage.removeItem(key);
+      loadSettings();
+      msg.textContent = 'Settings reset.';
+    });
+
+    loadSettings();
+  </script>
+</body>
+</html>
+

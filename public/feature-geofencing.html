@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Geo-fencing | AttendPro</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="hero-style.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
+</head>
+<body>
+  <header class="page-hero">
+    <nav class="hero-nav">
+      <div class="nav-container">
+        <div class="logo">
+          <i class="fas fa-clock"></i>
+          <span>AttendPro</span>
+        </div>
+        <ul class="nav-menu">
+          <li><a href="index.html" class="nav-link">Home</a></li>
+          <li><a href="features.html" class="nav-link">Features</a></li>
+          <li><a href="dashboard.html" class="nav-link">Dashboard</a></li>
+          <li><a href="about.html" class="nav-link">About</a></li>
+          <li><a href="contact.html" class="nav-link">Contact</a></li>
+        </ul>
+        <div class="hamburger">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+    </nav>
+    <div class="page-hero-content">
+      <h1 class="page-hero-title">Geo-fencing</h1>
+      <p class="page-hero-subtitle">GPS validation ensures attendance is marked only within approved zones.</p>
+    </div>
+  </header>
+
+  <section class="page-section">
+    <div class="container">
+      <div class="detail-card feature-box">
+        <div class="feature-detail-layout">
+          <div class="feature-visual feature-visual-geofencing">
+            <i class="fas fa-map-marked-alt"></i>
+            <span>Secure Perimeter</span>
+            <div class="feature-visual-caption">Verified office zones</div>
+          </div>
+          <div class="feature-detail-content">
+            <h2>Geo-fencing Controls</h2>
+            <form id="geofenceForm" class="detail-form">
+              <div class="detail-toggle">
+                <label>Enable Geo-fencing</label>
+                <input type="checkbox" id="geofenceEnabled" checked />
+              </div>
+              <div class="detail-field">
+                <label>Allowed Radius (meters)</label>
+                <input type="number" id="geofenceRadius" min="50" max="5000" placeholder="e.g. 300" />
+              </div>
+              <div class="detail-field">
+                <label>Max Location Drift (meters)</label>
+                <input type="number" id="geofenceDrift" min="5" max="500" placeholder="e.g. 25" />
+              </div>
+              <div class="detail-toggle">
+                <label>Strict Check-in Validation</label>
+                <input type="checkbox" id="geofenceStrict" />
+              </div>
+              <div class="detail-toggle">
+                <label>Allow Mobile Override</label>
+                <input type="checkbox" id="geofenceOverride" />
+              </div>
+              <div class="detail-toggle">
+                <label>Notify on Violations</label>
+                <input type="checkbox" id="geofenceAlerts" checked />
+              </div>
+              <div class="detail-form-actions">
+                <button class="hero-btn-primary" type="submit"><i class="fas fa-save"></i> Save Settings</button>
+                <button class="hero-btn-secondary" type="button" id="geofenceReset"><i class="fas fa-rotate-left"></i> Reset</button>
+                <a class="hero-btn-secondary" href="dashboard.html">Open Dashboard</a>
+              </div>
+            </form>
+            <div id="geofenceMsg" class="demo-result"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    const key = 'geofenceSettingsLite';
+    const form = document.getElementById('geofenceForm');
+    const msg = document.getElementById('geofenceMsg');
+
+    const fields = {
+      enabled: document.getElementById('geofenceEnabled'),
+      radius: document.getElementById('geofenceRadius'),
+      drift: document.getElementById('geofenceDrift'),
+      strict: document.getElementById('geofenceStrict'),
+      override: document.getElementById('geofenceOverride'),
+      alerts: document.getElementById('geofenceAlerts')
+    };
+
+    function loadSettings() {
+      const data = JSON.parse(localStorage.getItem(key) || '{}');
+      fields.enabled.checked = data.enabled !== false;
+      fields.radius.value = data.radius || '';
+      fields.drift.value = data.drift || '';
+      fields.strict.checked = Boolean(data.strict);
+      fields.override.checked = Boolean(data.override);
+      fields.alerts.checked = data.alerts !== false;
+    }
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const data = {
+        enabled: fields.enabled.checked,
+        radius: fields.radius.value,
+        drift: fields.drift.value,
+        strict: fields.strict.checked,
+        override: fields.override.checked,
+        alerts: fields.alerts.checked
+      };
+      localStorage.setItem(key, JSON.stringify(data));
+      msg.textContent = 'Geo-fencing settings saved.';
+    });
+
+    document.getElementById('geofenceReset').addEventListener('click', () => {
+      localStorage.removeItem(key);
+      loadSettings();
+      msg.textContent = 'Settings reset.';
+    });
+
+    loadSettings();
+  </script>
+</body>
+</html>

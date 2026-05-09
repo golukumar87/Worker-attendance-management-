@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Smart Insights | AttendPro</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="hero-style.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
+</head>
+<body>
+  <header class="page-hero">
+    <nav class="hero-nav">
+      <div class="nav-container">
+        <div class="logo">
+          <i class="fas fa-clock"></i>
+          <span>AttendPro</span>
+        </div>
+        <ul class="nav-menu">
+          <li><a href="index.html" class="nav-link">Home</a></li>
+          <li><a href="features.html" class="nav-link">Features</a></li>
+          <li><a href="dashboard.html" class="nav-link">Dashboard</a></li>
+          <li><a href="about.html" class="nav-link">About</a></li>
+          <li><a href="contact.html" class="nav-link">Contact</a></li>
+        </ul>
+        <div class="hamburger">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+    </nav>
+    <div class="page-hero-content">
+      <h1 class="page-hero-title">Smart Insights</h1>
+      <p class="page-hero-subtitle">Identify late patterns, overtime, and team attendance gaps.</p>
+    </div>
+  </header>
+
+  <section class="page-section">
+    <div class="container">
+      <div class="detail-card feature-box">
+        <h2>Insight Controls</h2>
+        <form id="insightForm" class="detail-form">
+          <div class="detail-field">
+            <label>Late Threshold (minutes)</label>
+            <input type="number" id="lateThreshold" placeholder="e.g. 15" />
+          </div>
+          <div class="detail-field">
+            <label>Overtime Threshold (hours)</label>
+            <input type="number" id="overtimeThreshold" placeholder="e.g. 2" />
+          </div>
+          <div class="detail-toggle">
+            <label>Enable Smart Insights</label>
+            <input type="checkbox" id="enableInsights" checked />
+          </div>
+          <div class="detail-form-actions">
+            <button class="hero-btn-primary" type="submit"><i class="fas fa-save"></i> Save Settings</button>
+            <button class="hero-btn-secondary" type="button" id="refreshInsights"><i class="fas fa-sync"></i> Refresh Insights</button>
+          </div>
+        </form>
+        <div id="insightMsg" class="demo-result"></div>
+      </div>
+
+      <div class="detail-card feature-box" style="margin-top: 20px;">
+        <h2>Current Insights</h2>
+        <div id="insightList" class="insights-list"></div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    const API_BASE = (() => {
+      if (window.location.protocol === 'file:') return 'http://localhost:3000';
+      if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        if (window.location.port && window.location.port !== '3000') return 'http://localhost:3000';
+      }
+      return window.location.origin;
+    })();
+
+    const apiUrl = (path) => `${API_BASE}${path}`;
+
+    const key = 'smartInsightSettings';
+    const form = document.getElementById('insightForm');
+    const msg = document.getElementById('insightMsg');
+    const insightList = document.getElementById('insightList');
+    const lateThreshold = document.getElementById('lateThreshold');
+    const overtimeThreshold = document.getElementById('overtimeThreshold');
+    const enableInsights = document.getElementById('enableInsights');
+    const refreshBtn = document.getElementById('refreshInsights');
+
+    function loadSettings() {
+      const data = JSON.parse(localStorage.getItem(key) || '{}');
+      lateThreshold.value = data.lateThreshold || '';
+      overtimeThreshold.value = data.overtimeThreshold || '';
+      enableInsights.checked = data.enableInsights !== false;
+    }
+
+    async function loadInsights() {
+      if (!enableInsights.checked) {
+        insightList.innerHTML = '<p>Insights are disabled.</p>';
+        return;
+      }
+      const res = await fetch(apiUrl('/api/attendance/report'));
+      const data = await res.json().catch(() => ({}));
+      if (!data.success) {
+        insightList.innerHTML = '<p>Unable to load insights.</p>';
+        return;
+      }
+      const days = data.data || [];
+      const totalLate = days.reduce((sum, d) => sum + (d.late || 0), 0);
+      const totalPresent = days.reduce((sum, d) => sum + (d.present || 0), 0);
+      const lateRate = totalPresent ? Math.round((totalLate / totalPresent) * 100) : 0;
+      insightList.innerHTML = `
+        <div class="alert-item">
+          <div>
+            <h4>Late Arrival Rate</h4>
+            <p>${lateRate}% of present employees marked late.</p>
+          </div>
+        </div>
+        <div class="alert-item">
+          <div>
+            <h4>Attendance Coverage</h4>
+            <p>Total present records: ${totalPresent} (last report window).</p>
+          </div>
+        </div>
+      `;
+    }
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const data = {
+        lateThreshold: lateThreshold.value,
+        overtimeThreshold: overtimeThreshold.value,
+        enableInsights: enableInsights.checked
+      };
+      localStorage.setItem(key, JSON.stringify(data));
+      msg.textContent = 'Insight settings saved.';
+    });
+
+    refreshBtn.addEventListener('click', loadInsights);
+
+    loadSettings();
+    loadInsights();
+  </script>
+</body>
+</html>
+

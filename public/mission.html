@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Our Mission | AttendPro</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="hero-style.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
+  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+</head>
+<body>
+  <header class="page-hero compact-hero">
+    <nav class="hero-nav">
+      <div class="nav-container">
+        <div class="logo">
+          <i class="fas fa-clock"></i>
+          <span>AttendPro</span>
+        </div>
+        <ul class="nav-menu">
+          <li><a href="index.html" class="nav-link">Home</a></li>
+          <li><a href="features.html" class="nav-link">Features</a></li>
+          <li><a href="dashboard.html" class="nav-link">Dashboard</a></li>
+          <li><a href="about.html" class="nav-link active">About</a></li>
+          <li><a href="contact.html" class="nav-link">Contact</a></li>
+          <li id="navLoginItem"><button class="nav-btn-login" id="navLoginBtn" onclick="showLoginModal()">Login</button></li>
+          <li id="navRegisterItem"><button class="nav-btn-register" id="navRegisterBtn" onclick="showRegisterModal()">Register</button></li>
+          <li id="navUserItem" class="nav-user" style="display: none;">
+            <div class="nav-user-info">
+              <img id="navUserPic" src="raa.jpg" alt="Profile">
+              <span id="navUserName">Admin</span>
+            </div>
+            <button class="nav-btn-profile" onclick="showProfileModal()">Edit Profile</button>
+            <button class="nav-btn-logout" onclick="logout()">Logout</button>
+          </li>
+        </ul>
+        <div class="hamburger">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+    </nav>
+    <div class="page-hero-content small">
+      <h1 class="page-hero-title">Our Mission</h1>
+      <p class="page-hero-subtitle">Reliable attendance tracking that gives HR teams clarity, speed, and confidence.</p>
+      <div class="page-hero-actions">
+        <a class="btn-primary" href="about.html">Back to About</a>
+        <a class="btn-secondary" href="contact.html">Talk to Us</a>
+      </div>
+    </div>
+  </header>
+
+  <section class="page-section">
+    <div class="container">
+      <h2 class="section-title">Why We Built AttendPro</h2>
+      <p class="section-subtitle">
+        Attendance data touches payroll, compliance, productivity, and daily operations. Our mission is to remove
+        friction and make attendance trustworthy in every environment.
+      </p>
+      <div class="about-grid">
+        <div class="about-card">
+          <h3>Accuracy Without Extra Work</h3>
+          <p>
+            We design workflows that eliminate manual corrections. Smart defaults, validation, and live
+            updates keep records clean while still allowing supervisors to review and correct when needed.
+          </p>
+        </div>
+        <div class="about-card">
+          <h3>Speed for Busy Teams</h3>
+          <p>
+            HR and managers need answers fast. Dashboards, filters, and summaries surface trends instantly
+            so teams spend less time searching and more time acting.
+          </p>
+        </div>
+        <div class="about-card">
+          <h3>Visibility Across the Workforce</h3>
+          <p>
+            From on-site teams to distributed staff, attendance should be clear and consistent. We provide
+            a unified view across shifts, departments, and locations.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="page-section alt-section">
+    <div class="container">
+      <h2 class="section-title">What This Means in Practice</h2>
+      <div class="checklist">
+        <div class="check-item"><i class="fas fa-check-circle"></i> Simple check-in and check-out flows that reduce errors.</div>
+        <div class="check-item"><i class="fas fa-check-circle"></i> Real-time updates for HR, managers, and employees.</div>
+        <div class="check-item"><i class="fas fa-check-circle"></i> Clean, exportable data for payroll and audits.</div>
+        <div class="check-item"><i class="fas fa-check-circle"></i> Flexible policies that adapt to different roles and shifts.</div>
+        <div class="check-item"><i class="fas fa-check-circle"></i> Clear accountability through roles and permissions.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="page-section">
+    <div class="container">
+      <h2 class="section-title">Our Commitment</h2>
+      <div class="about-grid">
+        <div class="about-card">
+          <h3>People-Centered Design</h3>
+          <p>
+            Attendance tools should respect users. We build with empathy for employees, supervisors, and HR
+            so every action feels clear, quick, and fair.
+          </p>
+        </div>
+        <div class="about-card">
+          <h3>Transparent Reporting</h3>
+          <p>
+            Reports should explain the story behind the data. We help teams understand lateness,
+            overtime patterns, and attendance rates with context and clarity.
+          </p>
+        </div>
+        <div class="about-card">
+          <h3>Continuous Improvement</h3>
+          <p>
+            We learn from real operations and keep refining the system so it stays practical, reliable,
+            and ready for future workforce needs.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Login Modal -->
+  <div id="loginModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('loginModal')">&times;</span>
+      <h2>Login to Your Account</h2>
+      <form id="loginForm" onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="loginEmail" required placeholder="Enter your email">
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="loginPassword" required placeholder="Enter your password">
+        </div>
+        <button type="submit" class="btn-primary btn-block">Login</button>
+        <p class="text-center">Don't have an account? <a href="#" onclick="showRegisterModal()">Register</a></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- Register Modal -->
+  <div id="registerModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('registerModal')">&times;</span>
+      <h2>Create New Account</h2>
+      <form id="registerForm" onsubmit="handleRegister(event)">
+        <div class="form-group">
+          <label>Username</label>
+          <input type="text" id="regUsername" required placeholder="Choose a username">
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="regEmail" required placeholder="Enter your email">
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="regPassword" required placeholder="Minimum 6 characters">
+        </div>
+        <div class="form-group">
+          <label>Department</label>
+          <select id="regDepartment" required>
+            <option value="">Select Department</option>
+            <option value="IT">IT</option>
+            <option value="HR">HR</option>
+            <option value="Finance">Finance</option>
+            <option value="Marketing">Marketing</option>
+          </select>
+        </div>
+        <button type="submit" class="btn-primary btn-block">Register</button>
+        <p class="text-center">Already have an account? <a href="#" onclick="showLoginModal()">Login</a></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast"></div>
+
+  <script src="script.js"></script>
+
+  <!-- Profile Edit Modal -->
+  <div id="profileModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('profileModal')">&times;</span>
+      <h2>Edit Profile</h2>
+      <form id="profileForm" onsubmit="saveProfile(event)">
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" id="profileName" required />
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="profileEmail" required />
+        </div>
+        <div class="form-group">
+          <label>Phone</label>
+          <input type="text" id="profilePhone" />
+        </div>
+        <div class="form-group">
+          <label>Department</label>
+          <select id="profileDepartment">
+            <option value="IT">IT</option>
+            <option value="HR">HR</option>
+            <option value="Finance">Finance</option>
+            <option value="Marketing">Marketing</option>
+            <option value="Operations">Operations</option>
+            <option value="Sales">Sales</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Role</label>
+          <select id="profileRole">
+            <option value="admin">Admin</option>
+            <option value="vice_admin">Vice Admin</option>
+          </select>
+        </div>
+        <button type="submit" class="btn-primary btn-block">Save Changes</button>
+      </form>
+    </div>
+  </div>
+</body>
+</html>

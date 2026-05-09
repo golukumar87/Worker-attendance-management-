@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Biometric Integration | AttendPro</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="hero-style.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
+</head>
+<body>
+  <header class="page-hero">
+    <nav class="hero-nav">
+      <div class="nav-container">
+        <div class="logo">
+          <i class="fas fa-clock"></i>
+          <span>AttendPro</span>
+        </div>
+        <ul class="nav-menu">
+          <li><a href="index.html" class="nav-link">Home</a></li>
+          <li><a href="features.html" class="nav-link">Features</a></li>
+          <li><a href="dashboard.html" class="nav-link">Dashboard</a></li>
+          <li><a href="about.html" class="nav-link">About</a></li>
+          <li><a href="contact.html" class="nav-link">Contact</a></li>
+        </ul>
+        <div class="hamburger">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+    </nav>
+    <div class="page-hero-content">
+      <h1 class="page-hero-title">Biometric Integration</h1>
+      <p class="page-hero-subtitle">Fingerprint, face recognition, and RFID support for tamper-proof check-in.</p>
+    </div>
+  </header>
+
+  <section class="page-section">
+    <div class="container">
+      <div class="detail-card feature-box">
+        <div class="feature-detail-layout">
+          <div class="feature-visual feature-visual-biometric">
+            <i class="fas fa-fingerprint"></i>
+            <span>Biometric Suite</span>
+            <div class="feature-visual-caption">Fingerprint, Face, RFID</div>
+          </div>
+          <div class="feature-detail-content">
+            <h2>Biometric Controls</h2>
+            <form id="biometricForm" class="detail-form">
+              <div class="detail-toggle">
+                <label>Enable Fingerprint</label>
+                <input type="checkbox" id="biometricFingerprint" checked />
+              </div>
+              <div class="detail-toggle">
+                <label>Enable Face Recognition</label>
+                <input type="checkbox" id="biometricFace" checked />
+              </div>
+              <div class="detail-toggle">
+                <label>Enable RFID</label>
+                <input type="checkbox" id="biometricRfid" checked />
+              </div>
+              <div class="detail-field">
+                <label>Liveness Threshold (%)</label>
+                <input type="number" id="biometricLiveness" min="50" max="100" placeholder="e.g. 82" />
+              </div>
+              <div class="detail-field">
+                <label>Retry Limit</label>
+                <input type="number" id="biometricRetries" min="1" max="10" placeholder="e.g. 3" />
+              </div>
+              <div class="detail-toggle">
+                <label>Device Binding Required</label>
+                <input type="checkbox" id="biometricDeviceLock" />
+              </div>
+              <div class="detail-form-actions">
+                <button class="hero-btn-primary" type="submit"><i class="fas fa-save"></i> Save Settings</button>
+                <button class="hero-btn-secondary" type="button" id="biometricReset"><i class="fas fa-rotate-left"></i> Reset</button>
+                <a class="hero-btn-secondary" href="dashboard.html">Open Dashboard</a>
+              </div>
+            </form>
+            <div id="biometricMsg" class="demo-result"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    const key = 'biometricSettings';
+    const form = document.getElementById('biometricForm');
+    const msg = document.getElementById('biometricMsg');
+
+    const fields = {
+      fingerprint: document.getElementById('biometricFingerprint'),
+      face: document.getElementById('biometricFace'),
+      rfid: document.getElementById('biometricRfid'),
+      liveness: document.getElementById('biometricLiveness'),
+      retries: document.getElementById('biometricRetries'),
+      deviceLock: document.getElementById('biometricDeviceLock')
+    };
+
+    function loadSettings() {
+      const data = JSON.parse(localStorage.getItem(key) || '{}');
+      fields.fingerprint.checked = data.fingerprint !== false;
+      fields.face.checked = data.face !== false;
+      fields.rfid.checked = data.rfid !== false;
+      fields.liveness.value = data.liveness || '';
+      fields.retries.value = data.retries || '';
+      fields.deviceLock.checked = Boolean(data.deviceLock);
+    }
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const data = {
+        fingerprint: fields.fingerprint.checked,
+        face: fields.face.checked,
+        rfid: fields.rfid.checked,
+        liveness: fields.liveness.value,
+        retries: fields.retries.value,
+        deviceLock: fields.deviceLock.checked
+      };
+      localStorage.setItem(key, JSON.stringify(data));
+      msg.textContent = 'Biometric settings saved.';
+    });
+
+    document.getElementById('biometricReset').addEventListener('click', () => {
+      localStorage.removeItem(key);
+      loadSettings();
+      msg.textContent = 'Settings reset.';
+    });
+
+    loadSettings();
+  </script>
+</body>
+</html>

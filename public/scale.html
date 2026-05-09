@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Built for Scale | AttendPro</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="hero-style.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
+  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+</head>
+<body>
+  <header class="page-hero compact-hero">
+    <nav class="hero-nav">
+      <div class="nav-container">
+        <div class="logo">
+          <i class="fas fa-clock"></i>
+          <span>AttendPro</span>
+        </div>
+        <ul class="nav-menu">
+          <li><a href="index.html" class="nav-link">Home</a></li>
+          <li><a href="features.html" class="nav-link">Features</a></li>
+          <li><a href="dashboard.html" class="nav-link">Dashboard</a></li>
+          <li><a href="about.html" class="nav-link active">About</a></li>
+          <li><a href="contact.html" class="nav-link">Contact</a></li>
+          <li id="navLoginItem"><button class="nav-btn-login" id="navLoginBtn" onclick="showLoginModal()">Login</button></li>
+          <li id="navRegisterItem"><button class="nav-btn-register" id="navRegisterBtn" onclick="showRegisterModal()">Register</button></li>
+          <li id="navUserItem" class="nav-user" style="display: none;">
+            <div class="nav-user-info">
+              <img id="navUserPic" src="raa.jpg" alt="Profile">
+              <span id="navUserName">Admin</span>
+            </div>
+            <button class="nav-btn-profile" onclick="showProfileModal()">Edit Profile</button>
+            <button class="nav-btn-logout" onclick="logout()">Logout</button>
+          </li>
+        </ul>
+        <div class="hamburger">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+    </nav>
+    <div class="page-hero-content small">
+      <h1 class="page-hero-title">Built for Scale</h1>
+      <p class="page-hero-subtitle">A platform that grows with your teams, sites, and organizational complexity.</p>
+      <div class="page-hero-actions">
+        <a class="btn-primary" href="about.html">Back to About</a>
+        <a class="btn-secondary" href="features.html">Explore Features</a>
+      </div>
+    </div>
+  </header>
+
+  <section class="page-section">
+    <div class="container">
+      <h2 class="section-title">Scale Without Chaos</h2>
+      <p class="section-subtitle">
+        AttendPro is built to support growing teams, new departments, and multiple work locations without
+        slowing down your operations.
+      </p>
+      <div class="about-grid">
+        <div class="about-card">
+          <h3>Department Flexibility</h3>
+          <p>
+            Add departments, shifts, and policies with minimal setup. Attendance rules remain consistent
+            while still allowing localized variations where needed.
+          </p>
+        </div>
+        <div class="about-card">
+          <h3>Multi-Location Ready</h3>
+          <p>
+            Track attendance across sites and teams with a single dashboard. Managers see relevant
+            data while HR retains a full organizational view.
+          </p>
+        </div>
+        <div class="about-card">
+          <h3>Performance at Growth</h3>
+          <p>
+            Optimized dashboards, data caching, and filters keep performance steady even as the
+            employee count grows.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="page-section alt-section">
+    <div class="container">
+      <h2 class="section-title">Growth-Ready Features</h2>
+      <div class="checklist">
+        <div class="check-item"><i class="fas fa-check-circle"></i> Scalable attendance reports and exports.</div>
+        <div class="check-item"><i class="fas fa-check-circle"></i> Role controls for admin, vice admin, and managers.</div>
+        <div class="check-item"><i class="fas fa-check-circle"></i> Easy shift updates for changing schedules.</div>
+        <div class="check-item"><i class="fas fa-check-circle"></i> Consistent check-in experience across teams.</div>
+        <div class="check-item"><i class="fas fa-check-circle"></i> Offline support for remote and field teams.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="page-section">
+    <div class="container">
+      <h2 class="section-title">Ready for the Next Stage</h2>
+      <div class="about-grid">
+        <div class="about-card">
+          <h3>Operational Clarity</h3>
+          <p>
+            As headcount grows, clarity becomes critical. We organize attendance data so teams can
+            make better staffing, payroll, and compliance decisions.
+          </p>
+        </div>
+        <div class="about-card">
+          <h3>Simple Expansion</h3>
+          <p>
+            New teams should not require new tools. AttendPro expands with you so HR can scale
+            processes without retraining everyone.
+          </p>
+        </div>
+        <div class="about-card">
+          <h3>Future-Ready Platform</h3>
+          <p>
+            Integrations, exports, and analytics prepare your data for payroll systems, finance tools,
+            and leadership reporting.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Login Modal -->
+  <div id="loginModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('loginModal')">&times;</span>
+      <h2>Login to Your Account</h2>
+      <form id="loginForm" onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="loginEmail" required placeholder="Enter your email">
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="loginPassword" required placeholder="Enter your password">
+        </div>
+        <button type="submit" class="btn-primary btn-block">Login</button>
+        <p class="text-center">Don't have an account? <a href="#" onclick="showRegisterModal()">Register</a></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- Register Modal -->
+  <div id="registerModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('registerModal')">&times;</span>
+      <h2>Create New Account</h2>
+      <form id="registerForm" onsubmit="handleRegister(event)">
+        <div class="form-group">
+          <label>Username</label>
+          <input type="text" id="regUsername" required placeholder="Choose a username">
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="regEmail" required placeholder="Enter your email">
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="regPassword" required placeholder="Minimum 6 characters">
+        </div>
+        <div class="form-group">
+          <label>Department</label>
+          <select id="regDepartment" required>
+            <option value="">Select Department</option>
+            <option value="IT">IT</option>
+            <option value="HR">HR</option>
+            <option value="Finance">Finance</option>
+            <option value="Marketing">Marketing</option>
+          </select>
+        </div>
+        <button type="submit" class="btn-primary btn-block">Register</button>
+        <p class="text-center">Already have an account? <a href="#" onclick="showLoginModal()">Login</a></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast"></div>
+
+  <script src="script.js"></script>
+
+  <!-- Profile Edit Modal -->
+  <div id="profileModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('profileModal')">&times;</span>
+      <h2>Edit Profile</h2>
+      <form id="profileForm" onsubmit="saveProfile(event)">
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" id="profileName" required />
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="profileEmail" required />
+        </div>
+        <div class="form-group">
+          <label>Phone</label>
+          <input type="text" id="profilePhone" />
+        </div>
+        <div class="form-group">
+          <label>Department</label>
+          <select id="profileDepartment">
+            <option value="IT">IT</option>
+            <option value="HR">HR</option>
+            <option value="Finance">Finance</option>
+            <option value="Marketing">Marketing</option>
+            <option value="Operations">Operations</option>
+            <option value="Sales">Sales</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Role</label>
+          <select id="profileRole">
+            <option value="admin">Admin</option>
+            <option value="vice_admin">Vice Admin</option>
+          </select>
+        </div>
+        <button type="submit" class="btn-primary btn-block">Save Changes</button>
+      </form>
+    </div>
+  </div>
+</body>
+</html>

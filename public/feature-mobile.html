@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mobile Friendly | AttendPro</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="hero-style.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
+</head>
+<body>
+  <header class="page-hero">
+    <nav class="hero-nav">
+      <div class="nav-container">
+        <div class="logo">
+          <i class="fas fa-clock"></i>
+          <span>AttendPro</span>
+        </div>
+        <ul class="nav-menu">
+          <li><a href="index.html" class="nav-link">Home</a></li>
+          <li><a href="features.html" class="nav-link">Features</a></li>
+          <li><a href="dashboard.html" class="nav-link">Dashboard</a></li>
+          <li><a href="about.html" class="nav-link">About</a></li>
+          <li><a href="contact.html" class="nav-link">Contact</a></li>
+        </ul>
+        <div class="hamburger">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+    </nav>
+    <div class="page-hero-content">
+      <h1 class="page-hero-title">Mobile Friendly</h1>
+      <p class="page-hero-subtitle">Responsive UI optimized for on-site and remote teams.</p>
+    </div>
+  </header>
+
+  <section class="page-section">
+    <div class="container">
+      <div class="detail-card feature-box">
+        <div class="feature-detail-layout">
+          <div class="feature-visual feature-visual-mobile">
+            <i class="fas fa-mobile-alt"></i>
+            <span>Mobile Experience</span>
+            <div class="feature-visual-caption">On-site and remote teams</div>
+          </div>
+          <div class="feature-detail-content">
+            <h2>Mobile Controls</h2>
+            <form id="mobileForm" class="detail-form">
+              <div class="detail-toggle">
+                <label>Enable Mobile Check-in</label>
+                <input type="checkbox" id="mobileCheckin" checked />
+              </div>
+              <div class="detail-toggle">
+                <label>Offline Cache</label>
+                <input type="checkbox" id="mobileOffline" checked />
+              </div>
+              <div class="detail-toggle">
+                <label>Photo Proof Required</label>
+                <input type="checkbox" id="mobilePhoto" />
+              </div>
+              <div class="detail-toggle">
+                <label>Push Notifications</label>
+                <input type="checkbox" id="mobilePush" checked />
+              </div>
+              <div class="detail-field">
+                <label>App Theme</label>
+                <select id="mobileTheme">
+                  <option value="system">System</option>
+                  <option value="light">Light</option>
+                  <option value="dark">Dark</option>
+                </select>
+              </div>
+              <div class="detail-form-actions">
+                <button class="hero-btn-primary" type="submit"><i class="fas fa-save"></i> Save Settings</button>
+                <button class="hero-btn-secondary" type="button" id="mobileReset"><i class="fas fa-rotate-left"></i> Reset</button>
+                <a class="hero-btn-secondary" href="dashboard.html">Open Dashboard</a>
+              </div>
+            </form>
+            <div id="mobileMsg" class="demo-result"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    const key = 'mobileSettings';
+    const form = document.getElementById('mobileForm');
+    const msg = document.getElementById('mobileMsg');
+
+    const fields = {
+      checkin: document.getElementById('mobileCheckin'),
+      offline: document.getElementById('mobileOffline'),
+      photo: document.getElementById('mobilePhoto'),
+      push: document.getElementById('mobilePush'),
+      theme: document.getElementById('mobileTheme')
+    };
+
+    function loadSettings() {
+      const data = JSON.parse(localStorage.getItem(key) || '{}');
+      fields.checkin.checked = data.checkin !== false;
+      fields.offline.checked = data.offline !== false;
+      fields.photo.checked = Boolean(data.photo);
+      fields.push.checked = data.push !== false;
+      fields.theme.value = data.theme || 'system';
+    }
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const data = {
+        checkin: fields.checkin.checked,
+        offline: fields.offline.checked,
+        photo: fields.photo.checked,
+        push: fields.push.checked,
+        theme: fields.theme.value
+      };
+      localStorage.setItem(key, JSON.stringify(data));
+      msg.textContent = 'Mobile settings saved.';
+    });
+
+    document.getElementById('mobileReset').addEventListener('click', () => {
+      localStorage.removeItem(key);
+      loadSettings();
+      msg.textContent = 'Settings reset.';
+    });
+
+    loadSettings();
+  </script>
+</body>
+</html>
